@@ -1,10 +1,13 @@
 .art-table {
+  --art-table-font-size: 13px;
+
   position: relative;
   height: 100%;
 
   .el-table {
     height: 100%;
     margin-top: 10px;
+    font-size: var(--art-table-font-size) !important;
   }
 
   :deep(.el-loading-mask) {

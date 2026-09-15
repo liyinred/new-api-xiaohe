@@ -24,7 +24,7 @@
  * ## 持久化
  *
  * - 使用 localStorage 存储
- * - 存储键：sys-v{version}-setting
+ * - 存储键：sys-v{version}-setting-v3
  * - 支持跨版本数据迁移
  *
  * @module store/modules/setting
@@ -443,7 +443,7 @@ export const useSettingStore = defineStore(
   },
   {
     persist: {
-      key: 'setting',
+      key: 'setting-v3',
       storage: localStorage
     }
   }

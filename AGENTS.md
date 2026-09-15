@@ -1,0 +1,3 @@
+- `web-xiaohe`文件夹: 自建定制前端Vue3项目
+- `docs-xiaohe`文件夹: 自建定制项目说明文档
+- 不开启Vue3端口，不执行`build`操作
