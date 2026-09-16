@@ -19,7 +19,7 @@
       "title": "Search"
     },
     "user": {
-      "userCenter": "User center",
+      "userCenter": "Profile",
       "docs": "Document",
       "github": "Github",
       "lockScreen": "Lock screen",
@@ -48,20 +48,11 @@
   "setting": {
     "menuType": {
       "title": "Menu Layout",
-      "list": [
-        "Vertical",
-        "Horizontal",
-        "Mixed",
-        "Dual"
-      ]
+      "list": ["Vertical", "Horizontal", "Mixed", "Dual"]
     },
     "theme": {
       "title": "Theme Style",
-      "list": [
-        "Light",
-        "Dark",
-        "System"
-      ]
+      "list": ["Light", "Dark", "System"]
     },
     "menu": {
       "title": "Menu Style"
@@ -71,17 +62,11 @@
     },
     "box": {
       "title": "Box Style",
-      "list": [
-        "Border",
-        "Shadow"
-      ]
+      "list": ["Border", "Shadow"]
     },
     "container": {
       "title": "Container Width",
-      "list": [
-        "Full",
-        "Boxed"
-      ]
+      "list": ["Full", "Boxed"]
     },
     "basics": {
       "title": "Basic Config",
@@ -127,14 +112,8 @@
   "notice": {
     "title": "Notice",
     "btnRead": "Mark as read",
-    "bar": [
-      "Notice",
-      "Message",
-      "Todo"
-    ],
-    "text": [
-      "No"
-    ],
+    "bar": ["Notice", "Message", "Todo"],
+    "text": ["No"],
     "viewAll": "View all"
   },
   "worktab": {
@@ -150,8 +129,8 @@
   },
   "login": {
     "leftView": {
-      "title": "A backend system of beauty and efficiency",
-      "subTitle": "A sleek and practical interface for a great user experience"
+      "title": "A one-stop TokenHub for multi-model access",
+      "subTitle": "Manage API keys, model quotas, and usage records in one place for simpler multi-model integration"
     },
     "title": "Welcome back",
     "subTitle": "Please enter your account and password to login",
@@ -174,8 +153,9 @@
     "register": "Register",
     "success": {
       "title": "Login successful",
-      "message": "Welcome back"
-    }
+      "message": "Welcome back, {name}!"
+    },
+    "unsupportedVerification": "This account requires additional verification. Please complete sign-in in the official frontend first"
   },
   "forgetPassword": {
     "title": "Forgot password?",
@@ -190,20 +170,28 @@
     "placeholder": {
       "username": "Please enter your account",
       "password": "Please enter your password",
-      "confirmPassword": "Please enter your password again"
+      "confirmPassword": "Please enter your password again",
+      "email": "Enter your email address",
+      "verificationCode": "Enter the email verification code"
     },
     "rule": {
       "confirmPasswordRequired": "Please enter your password again",
       "passwordMismatch": "The two passwords are inconsistent!",
       "usernameLength": "The length is 3 to 20 characters",
       "passwordLength": "The password length cannot be less than 6 digits",
-      "agreementRequired": "Please agree to the privacy policy"
+      "agreementRequired": "Please agree to the user agreement and privacy policy",
+      "email": "Enter a valid email address"
     },
     "agreeText": "I agree",
     "privacyPolicy": "Privacy policy",
     "submitBtnText": "Register",
     "hasAccount": "Already have an account?",
-    "toLogin": "To login"
+    "toLogin": "To login",
+    "agreement": "I agree to the user agreement and privacy policy",
+    "sendVerificationCode": "Send code",
+    "verificationSent": "Verification code sent",
+    "success": "Registration successful. Please sign in",
+    "disabled": "Account registration is currently disabled"
   },
   "lockScreen": {
     "pwdError": "Password error",
@@ -222,6 +210,320 @@
     "morning": "Good morning!",
     "afternoon": "Good afternoon!",
     "evening": "Good evening!"
+  },
+  "dashboard": {
+    "usage": {
+      "title": "Usage at a glance",
+      "description": "Monitor balance, total usage, and request volume",
+      "balance": "Credit remaining ($)",
+      "balanceHint": "Available account credit",
+      "used": "Total usage ($)",
+      "usedHint": "All-time credit usage",
+      "requests": "Requests",
+      "requestsHint": "All-time API requests"
+    },
+    "quickStart": {
+      "title": "Quick start",
+      "heading": "Create a key and connect",
+      "description": "Use separate keys to control quotas, expiration, and access scope.",
+      "action": "Manage API keys"
+    },
+    "trend": { "title": "Last 24 hours", "description": "Hourly API usage ($)" },
+    "apiInfo": {
+      "title": "API connection",
+      "endpoint": "Endpoint",
+      "group": "Current user group",
+      "defaultGroup": "Default group",
+      "safety": "Never expose API keys in browsers or public repositories",
+      "copied": "Endpoint copied"
+    },
+    "modelAnalytics": {
+      "title": "Model Data",
+      "filter": "Filter",
+      "filterTitle": "Model analytics filters",
+      "quickRange": "Quick range",
+      "oneDay": "1 day",
+      "sevenDays": "7 days",
+      "fourteenDays": "14 days",
+      "twentyNineDays": "29 days",
+      "customRange": "Custom time range",
+      "granularity": "Time granularity",
+      "hour": "Hour",
+      "day": "Day",
+      "week": "Week",
+      "reset": "Reset",
+      "apply": "Apply filters",
+      "totalCount": "Total count",
+      "totalCountHint": "Calls in the selected range",
+      "totalQuota": "Total quota",
+      "totalQuotaHint": "Quota consumed in the selected range",
+      "totalTokens": "Total tokens",
+      "totalTokensHint": "Tokens used in the selected range",
+      "averageRpm": "Average RPM",
+      "averageRpmHint": "Average requests per minute",
+      "averageTpm": "Average TPM",
+      "averageTpmHint": "Average tokens per minute",
+      "quotaDistribution": "Quota distribution",
+      "barChart": "Bar chart",
+      "areaChart": "Area chart",
+      "total": "Total",
+      "callTrend": "Call trend",
+      "callDistribution": "Call count distribution",
+      "callRanking": "Call count ranking",
+      "noData": "No model call data in the selected range",
+      "loadFailed": "Failed to load model call analytics"
+    }
+  },
+  "apiKeys": {
+    "create": "Create key",
+    "search": "Search",
+    "searchPlaceholder": "Search key names",
+    "empty": "No API keys yet",
+    "copy": "Copy",
+    "edit": "Edit",
+    "delete": "Delete",
+    "createTitle": "Create API key",
+    "editTitle": "Edit API key",
+    "neverExpires": "Never expires",
+    "unlimited": "Unlimited",
+    "created": "API key created",
+    "updated": "API key updated",
+    "deleted": "API key deleted",
+    "copied": "API key copied",
+    "statusUpdated": "API key status updated",
+    "deleteConfirm": "Delete API key “{name}”? This action cannot be undone.",
+    "filters": {
+      "name": "Key name",
+      "namePlaceholder": "Enter a key name",
+      "key": "Key",
+      "keyPlaceholder": "Enter a key"
+    },
+    "columns": {
+      "name": "Name / key",
+      "status": "Status",
+      "quota": "Remaining / used ($)",
+      "expiration": "Expiration",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "fields": {
+      "name": "Name",
+      "quota": "Remaining quota ($)",
+      "expiration": "Expiration",
+      "unlimited": "Unlimited quota",
+      "allowedIps": "Allowed IPs",
+      "allowedIpsHint": "Separate IPs with commas; leave blank for unrestricted",
+      "modelLimits": "Allowed models",
+      "modelLimitsHint": "Select allowed models; leave blank for unrestricted"
+    },
+    "validation": { "name": "Enter a key name" }
+  },
+  "usageLogs": {
+    "empty": "No usage logs yet",
+    "stream": "Streaming",
+    "nonStream": "Non-streaming",
+    "viewDetails": "View details",
+    "stats": {
+      "quota": "Quota used ($)",
+      "quotaHint": "Total usage in the selected range",
+      "rpm": "RPM",
+      "rpmHint": "Requests in the last minute",
+      "tpm": "TPM",
+      "tpmHint": "Tokens in the last minute"
+    },
+    "filters": {
+      "type": "Log type",
+      "typePlaceholder": "Select a log type",
+      "model": "Model",
+      "modelPlaceholder": "Enter a model name",
+      "token": "Key name",
+      "tokenPlaceholder": "Enter a key name",
+      "requestId": "Request ID",
+      "requestIdPlaceholder": "Enter a request ID",
+      "time": "Time range",
+      "startTime": "Start time",
+      "endTime": "End time"
+    },
+    "columns": {
+      "time": "Time",
+      "type": "Type",
+      "model": "Model / group",
+      "token": "Key",
+      "tokens": "Input / output tokens",
+      "quota": "Quota used ($)",
+      "timing": "Timing",
+      "details": "Details"
+    },
+    "types": {
+      "all": "All",
+      "unknown": "Unknown",
+      "topup": "Top-up",
+      "consume": "Consume",
+      "manage": "Manage",
+      "system": "System",
+      "error": "Error",
+      "refund": "Refund",
+      "login": "Login"
+    },
+    "details": {
+      "title": "Log details",
+      "requestId": "Request ID",
+      "content": "Log content",
+      "billing": {
+        "title": "Billing details",
+        "mode": "Billing mode",
+        "dynamicPricing": "Dynamic pricing",
+        "perCall": "Per-call",
+        "perToken": "Per-token",
+        "matchedTier": "Matched tier",
+        "modelPrice": "Model price",
+        "inputPrice": "Input price",
+        "outputPrice": "Output price",
+        "groupRatio": "Group ratio",
+        "userGroupRatio": "User exclusive ratio",
+        "totalCost": "Total cost"
+      },
+      "quotaAdjustment": {
+        "title": "Quota adjustment details",
+        "targetUsername": "Target username",
+        "userId": "User ID",
+        "mode": "Adjustment mode",
+        "requestedQuota": "Requested quota",
+        "beforeQuota": "Quota before adjustment",
+        "afterQuota": "Quota after adjustment",
+        "increase": "Increase user quota",
+        "decrease": "Decrease user quota",
+        "override": "Override user quota",
+        "notRecorded": "Not recorded"
+      }
+    }
+  },
+  "profile": {
+    "avatarAlt": "User avatar",
+    "unboundEmail": "No email bound",
+    "defaultGroup": "Default group",
+    "roles": { "user": "User", "admin": "Admin", "super": "Super admin" },
+    "stats": {
+      "balance": "Credit remaining ($)",
+      "used": "Total usage ($)",
+      "requests": "Requests"
+    },
+    "userInfo": {
+      "title": "User information",
+      "description": "Review your account and update its display name",
+      "displayName": "Display name",
+      "displayNamePlaceholder": "Enter a display name",
+      "group": "User group",
+      "accountEmail": "Account email",
+      "save": "Save user information",
+      "saved": "User information updated"
+    },
+    "email": {
+      "title": "Email settings",
+      "description": "Choose where quota warning emails are delivered",
+      "accountHint": "Current account email: {email}",
+      "notificationEmail": "Notification email",
+      "notificationEmailPlaceholder": "Leave empty to use the account email",
+      "notificationEmailHint": "A warning is sent here when the balance falls below the threshold.",
+      "threshold": "Quota warning threshold ($)",
+      "thresholdHint": "Send an email when the remaining quota falls below this USD amount.",
+      "save": "Save email settings",
+      "saved": "Email settings updated"
+    },
+    "security": {
+      "title": "Login & authentication",
+      "description": "Manage your account password and sign-in email",
+      "password": "Account password",
+      "configured": "Configured",
+      "notConfigured": "Not configured",
+      "passwordHint": "Update your password regularly to keep your account secure.",
+      "changePassword": "Change password",
+      "accountEmail": "Account email",
+      "bound": "Bound",
+      "notBound": "Not bound",
+      "emailHint": "No account email is bound",
+      "changeEmail": "Change email",
+      "bindEmail": "Bind email",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "passwordPolicy": "Use 8–128 characters.",
+      "cancel": "Cancel",
+      "newAccountEmail": "New account email",
+      "emailCodeHint": "A verification code was sent to {email}. Complete the email verification.",
+      "newEmailCode": "New email verification code",
+      "oldEmailCode": "Current email verification code",
+      "resendCode": "Resend verification code",
+      "resendCountdown": "Resend in {seconds}s",
+      "confirmEmail": "Confirm email",
+      "continue": "Continue",
+      "notificationWarning": "The change succeeded, but the security notification email could not be sent.",
+      "passwordChanged": "Password changed successfully",
+      "emailBound": "Account email bound successfully",
+      "codeResent": "Verification code sent again"
+    },
+    "validation": {
+      "displayNameRequired": "Enter a display name",
+      "displayNameLength": "The display name must be no more than 30 characters",
+      "email": "Enter a valid email address",
+      "threshold": "Enter a quota warning threshold",
+      "currentPassword": "Enter your current password",
+      "newPassword": "Enter a new password",
+      "confirmPassword": "Enter the new password again",
+      "passwordLength": "The password must be 8–128 characters",
+      "passwordMismatch": "The new passwords do not match",
+      "passwordUnchanged": "The new password must differ from the current password",
+      "accountEmail": "Enter an account email",
+      "emailCode": "Enter the 6-digit email verification code"
+    }
+  },
+  "modelSquare": {
+    "title": "Model Square",
+    "description": "Discover available AI models, compare pricing, billing modes, and endpoints, then choose the right model for each scenario.",
+    "searchPlaceholder": "Search model name, vendor, endpoint, or tag",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "clearAll": "Clear all",
+    "all": "All",
+    "billingType": "Billing type",
+    "endpointType": "Endpoint type",
+    "vendor": "Vendor",
+    "group": "Group",
+    "groups": "Groups",
+    "tag": "Tag",
+    "endpoints": "Endpoints",
+    "model": "Model",
+    "input": "Input price",
+    "output": "Output price",
+    "pricePerRequest": "Per request",
+    "ratio": "Ratio",
+    "pricingByGroup": "Pricing by group",
+    "priceUnit": "Prices shown per {unit} tokens",
+    "details": "Details",
+    "actions": "Actions",
+    "overview": "Overview",
+    "api": "API",
+    "unknownVendor": "Unknown vendor",
+    "noDescription": "No model description",
+    "noEndpoints": "No endpoint information",
+    "empty": "No models match the current filters",
+    "resultCount": "Showing {filtered} of {total} models",
+    "rechargePrice": "Recharge price",
+    "rechargePriceHint": "Show the actual recharge cost using the system recharge rate",
+    "cardView": "Card view",
+    "tableView": "Table view",
+    "refresh": "Refresh model square",
+    "quotaTypes": {
+      "all": "All models",
+      "token": "Token-based",
+      "request": "Per request",
+      "task": "Dynamic pricing"
+    },
+    "sort": {
+      "name": "Sort by name",
+      "priceLow": "Price: low to high",
+      "priceHigh": "Price: high to low"
+    }
   },
   "exceptionPage": {
     "403": "Sorry, you do not have permission to access this page",
@@ -246,6 +548,11 @@
       "title": "Dashboard",
       "console": "Console"
     },
+    "modelSquare": { "title": "Model Square" },
+    "modelData": { "title": "Model Data" },
+    "apiKeys": { "title": "API Keys", "list": "Key management" },
+    "usageLogs": { "title": "Usage Logs" },
+    "profile": { "title": "Profile" },
     "result": {
       "title": "Result Page",
       "success": "Success",

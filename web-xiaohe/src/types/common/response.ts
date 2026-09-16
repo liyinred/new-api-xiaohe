@@ -21,10 +21,14 @@
 
 /** 基础 API 响应结构 */
 export interface BaseResponse<T = unknown> {
-  /** 状态码 */
-  code: number
-  /** 消息 */
-  msg: string
+  /** 旧版接口状态码或新版业务错误码 */
+  code?: number | string
+  /** 旧版接口消息 */
+  msg?: string
+  /** 新版接口是否成功 */
+  success?: boolean
+  /** 新版接口消息 */
+  message?: string
   /** 数据 */
   data: T
 }

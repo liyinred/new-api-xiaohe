@@ -1,24 +1,14 @@
 import { AppRouteRecord } from '@/types/router'
 
 export const dashboardRoutes: AppRouteRecord = {
-  name: 'Dashboard',
-  path: '/dashboard',
-  component: '/index/index',
+  name: 'Console',
+  path: '/dashboard/console',
+  component: '/dashboard/console',
   meta: {
-    title: 'menus.dashboard.title',
+    title: 'menus.dashboard.console',
     icon: 'ri:pie-chart-line',
-    roles: ['R_SUPER', 'R_ADMIN']
-  },
-  children: [
-    {
-      path: 'console',
-      name: 'Console',
-      component: '/dashboard/console',
-      meta: {
-        title: 'menus.dashboard.console',
-        keepAlive: false,
-        fixedTab: true
-      }
-    }
-  ]
+    roles: ['R_SUPER', 'R_ADMIN', 'R_USER'],
+    keepAlive: false,
+    fixedTab: true
+  }
 }

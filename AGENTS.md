@@ -1,3 +1,4 @@
-- `web-xiaohe`文件夹: 自建定制前端Vue3项目
-- `docs-xiaohe`文件夹: 自建定制项目说明文档
+- `web`文件夹: newapi官方前端项目
+- `web-xiaohe`文件夹: xiaohe定制前端Vue3项目
+- `docs-xiaohe`文件夹: xiaohe定制项目说明文档
 - 不开启Vue3端口，不执行`build`操作

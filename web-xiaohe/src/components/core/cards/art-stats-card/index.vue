@@ -1,26 +1,29 @@
 <!-- 统计卡片 -->
 <template>
   <div
-    class="art-card h-32 flex-c px-5 transition-transform duration-200 hover:-translate-y-0.5"
+    class="art-card min-h-24 flex-c px-4 py-3 transition-transform duration-200 hover:-translate-y-0.5"
     :class="boxStyle"
   >
-    <div v-if="icon" class="mr-4 size-11 flex-cc rounded-lg text-xl text-white" :class="iconStyle">
+    <div v-if="icon" class="mr-3 size-10 flex-cc rounded-lg text-lg text-white" :class="iconStyle">
       <ArtSvgIcon :icon="icon"></ArtSvgIcon>
     </div>
-    <div class="flex-1">
-      <p class="m-0 text-lg font-medium" :style="{ color: textColor }" v-if="title">
+    <div class="flex-1 space-y-0.5">
+      <p class="m-0 text-sm font-medium" :style="{ color: textColor }" v-if="title">
         {{ title }}
       </p>
+      <p v-if="displayValue !== undefined" class="m-0 text-xl font-medium text-g-900 tabular-nums">
+        {{ displayValue }}
+      </p>
       <ArtCountTo
-        class="m-0 text-2xl font-medium"
-        v-if="count !== undefined"
+        class="m-0 text-xl font-medium"
+        v-else-if="count !== undefined"
         :target="count"
         :duration="2000"
         :decimals="decimals"
         :separator="separator"
       />
       <p
-        class="mt-1 text-sm text-g-500 opacity-90"
+        class="m-0 text-xs leading-4 text-g-500 opacity-90"
         :style="{ color: textColor }"
         v-if="description"
         >{{ description }}</p
@@ -46,6 +49,8 @@
     title?: string
     /** 数值 */
     count?: number
+    /** 已格式化的展示值 */
+    displayValue?: string
     /** 小数位 */
     decimals?: number
     /** 分隔符 */

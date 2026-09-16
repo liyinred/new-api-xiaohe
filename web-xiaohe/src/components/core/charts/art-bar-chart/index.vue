@@ -46,6 +46,13 @@
     )
   })
 
+  /**
+   * 为图表数值添加配置的前缀
+   * @param value 图表数值
+   * @returns 带前缀的数值文本
+   */
+  const formatChartValue = (value: number): string => `${props.valuePrefix || ''}${value}`
+
   // 获取颜色配置
   const getColor = (customColor?: string, index?: number) => {
     if (customColor) return customColor
@@ -149,7 +156,14 @@
           right: 0,
           left: 0
         }),
-        tooltip: props.showTooltip ? getTooltipStyle() : undefined,
+        tooltip: props.showTooltip
+          ? {
+              ...getTooltipStyle(),
+              valueFormatter: props.valuePrefix
+                ? (value: unknown) => formatChartValue(Number(value))
+                : undefined
+            }
+          : undefined,
         xAxis: {
           type: 'category',
           data: props.xAxisData,

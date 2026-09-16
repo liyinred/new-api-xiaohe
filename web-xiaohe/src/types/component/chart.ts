@@ -123,6 +123,8 @@ export interface BarChartProps extends BaseChartProps, AxisDisplayProps, Interac
   stack?: boolean
   /** 圆角 */
   borderRadius?: number | number[]
+  /** 提示值的数值前缀 */
+  valuePrefix?: string
 }
 
 // 折线图数据项接口
@@ -170,6 +172,8 @@ export interface LineChartProps extends BaseChartProps, AxisDisplayProps, Intera
   symbolSize?: number
   /** 多数据动画延迟间隔（毫秒） */
   animationDelay?: number
+  /** 坐标轴与提示值的数值前缀 */
+  valuePrefix?: string
 }
 
 // 雷达图数据项接口

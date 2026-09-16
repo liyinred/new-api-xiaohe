@@ -36,6 +36,8 @@ let unauthorizedTimer: NodeJS.Timeout | null = null
 interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   showErrorMessage?: boolean
   showSuccessMessage?: boolean
+  /** 是否返回包含业务元数据的完整响应体 */
+  returnFullResponseData?: boolean
 }
 
 const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
@@ -65,7 +67,12 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const { accessToken } = useUserStore()
-    if (accessToken) request.headers.set('Authorization', accessToken)
+    if (accessToken) {
+      const authorization = accessToken.startsWith('Bearer ')
+        ? accessToken
+        : `Bearer ${accessToken}`
+      request.headers.set('Authorization', authorization)
+    }
 
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
       request.headers.set('Content-Type', 'application/json')
@@ -83,10 +90,13 @@ axiosInstance.interceptors.request.use(
 /** 响应拦截器 */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse<BaseResponse>) => {
-    const { code, msg } = response.data
-    if (code === ApiStatus.success) return response
-    if (code === ApiStatus.unauthorized) handleUnauthorizedError(msg)
-    throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
+    const { code, msg, success, message } = response.data
+    if (success === true || code === ApiStatus.success) return response
+    if (code === ApiStatus.unauthorized) handleUnauthorizedError(message || msg)
+    throw createHttpError(
+      message || msg || $t('httpMsg.requestFailed'),
+      typeof code === 'number' ? code : ApiStatus.error
+    )
   },
   (error) => {
     if (error.response?.status === ApiStatus.unauthorized) handleUnauthorizedError()
@@ -162,7 +172,12 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-/** 请求函数 */
+/**
+ * 发送 HTTP 请求并按配置解析业务响应
+ * @param config Axios 请求配置与响应解析选项
+ * @param config.returnFullResponseData 是否保留 data 之外的业务元数据
+ * @returns 默认返回业务 data，启用完整响应时返回整个响应体
+ */
 async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> {
   // POST | PUT 参数自动填充
   if (
@@ -182,7 +197,7 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
       showSuccess(res.data.msg)
     }
 
-    return res.data.data as T
+    return (config.returnFullResponseData ? res.data : res.data.data) as T
   } catch (error) {
     if (error instanceof HttpError && error.code !== ApiStatus.unauthorized) {
       const showMsg = config.showErrorMessage !== false

@@ -107,6 +107,13 @@
   // 获取颜色配置（优化：缓存主题色）
   const primaryColor = computed(() => getCssVar('--el-color-primary'))
 
+  /**
+   * 为图表数值添加配置的前缀
+   * @param value 图表数值
+   * @returns 带前缀的数值文本
+   */
+  const formatChartValue = (value: number): string => `${props.valuePrefix || ''}${value}`
+
   const getColor = (customColor?: string, index?: number): string => {
     if (customColor) return customColor
     if (index !== undefined) return props.colors![index % props.colors!.length]
@@ -187,7 +194,11 @@
     }
   }
 
-  // 生成图表配置
+  /**
+   * 生成折线图配置
+   * @param isInitial 是否为动画初始化配置
+   * @returns ECharts 折线图配置
+   */
   const generateChartOptions = (isInitial = false): EChartsOption => {
     const options: EChartsOption = {
       animation: true,
@@ -198,7 +209,14 @@
         right: 15,
         left: 0
       }),
-      tooltip: props.showTooltip ? getTooltipStyle() : undefined,
+      tooltip: props.showTooltip
+        ? {
+            ...getTooltipStyle(),
+            valueFormatter: props.valuePrefix
+              ? (value: unknown) => formatChartValue(Number(value))
+              : undefined
+          }
+        : undefined,
       xAxis: {
         type: 'category',
         boundaryGap: false,
@@ -211,7 +229,10 @@
         type: 'value',
         min: 0,
         max: maxValue.value,
-        axisLabel: getAxisLabelStyle(props.showAxisLabel),
+        axisLabel: {
+          ...getAxisLabelStyle(props.showAxisLabel),
+          formatter: props.valuePrefix ? (value: number) => formatChartValue(value) : undefined
+        },
         axisLine: getAxisLineStyle(props.showAxisLine),
         splitLine: getSplitLineStyle(props.showSplitLine)
       }

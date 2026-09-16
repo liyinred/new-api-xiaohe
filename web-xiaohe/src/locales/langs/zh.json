@@ -19,7 +19,7 @@
       "title": "搜索"
     },
     "user": {
-      "userCenter": "个人中心",
+      "userCenter": "个人资料",
       "docs": "使用文档",
       "github": "Github",
       "lockScreen": "锁定屏幕",
@@ -48,20 +48,11 @@
   "setting": {
     "menuType": {
       "title": "菜单布局",
-      "list": [
-        "垂直",
-        "水平",
-        "混合",
-        "双列"
-      ]
+      "list": ["垂直", "水平", "混合", "双列"]
     },
     "theme": {
       "title": "主题风格",
-      "list": [
-        "浅色",
-        "深色",
-        "系统"
-      ]
+      "list": ["浅色", "深色", "系统"]
     },
     "menu": {
       "title": "菜单风格"
@@ -71,17 +62,11 @@
     },
     "box": {
       "title": "盒子样式",
-      "list": [
-        "边框",
-        "阴影"
-      ]
+      "list": ["边框", "阴影"]
     },
     "container": {
       "title": "容器宽度",
-      "list": [
-        "铺满",
-        "定宽"
-      ]
+      "list": ["铺满", "定宽"]
     },
     "basics": {
       "title": "基础配置",
@@ -127,14 +112,8 @@
   "notice": {
     "title": "通知",
     "btnRead": "标为已读",
-    "bar": [
-      "通知",
-      "消息",
-      "代办"
-    ],
-    "text": [
-      "暂无"
-    ],
+    "bar": ["通知", "消息", "代办"],
+    "text": ["暂无"],
     "viewAll": "查看全部"
   },
   "worktab": {
@@ -150,8 +129,8 @@
   },
   "login": {
     "leftView": {
-      "title": "一款兼具设计美学与高效开发的后台系统",
-      "subTitle": "美观实用的界面，经过视觉优化，确保卓越的用户体验"
+      "title": "面向多模型接入的一站式 TokenHub",
+      "subTitle": "统一管理 API 密钥、模型额度与调用记录，让多模型接入更简单"
     },
     "title": "欢迎回来",
     "subTitle": "输入您的账号和密码登录",
@@ -174,8 +153,9 @@
     "register": "注册",
     "success": {
       "title": "登录成功",
-      "message": "欢迎回来"
-    }
+      "message": "欢迎回来，{name}！"
+    },
+    "unsupportedVerification": "当前账号需要进一步安全验证，请先使用官方前端完成登录"
   },
   "forgetPassword": {
     "title": "忘记密码？",
@@ -190,20 +170,28 @@
     "placeholder": {
       "username": "请输入账号",
       "password": "请输入密码",
-      "confirmPassword": "请再次输入密码"
+      "confirmPassword": "请再次输入密码",
+      "email": "请输入邮箱地址",
+      "verificationCode": "请输入邮箱验证码"
     },
     "rule": {
       "confirmPasswordRequired": "请再次输入密码",
       "passwordMismatch": "两次输入密码不一致!",
       "usernameLength": "长度在 3 到 20 个字符",
       "passwordLength": "密码长度不能小于6位",
-      "agreementRequired": "请同意隐私协议"
+      "agreementRequired": "请同意用户协议和隐私政策",
+      "email": "请输入有效的邮箱地址"
     },
     "agreeText": "我同意",
     "privacyPolicy": "《隐私政策》",
     "submitBtnText": "注册",
     "hasAccount": "已有账号？",
-    "toLogin": "去登录"
+    "toLogin": "去登录",
+    "agreement": "我已阅读并同意用户协议和隐私政策",
+    "sendVerificationCode": "发送验证码",
+    "verificationSent": "验证码已发送",
+    "success": "注册成功，请登录",
+    "disabled": "系统当前未开放账号注册"
   },
   "lockScreen": {
     "pwdError": "密码错误",
@@ -222,6 +210,316 @@
     "morning": "上午好！",
     "afternoon": "下午好！",
     "evening": "晚上好！"
+  },
+  "dashboard": {
+    "usage": {
+      "title": "用量概览",
+      "description": "查看账户余额、累计消耗与请求情况",
+      "balance": "剩余额度（$）",
+      "balanceHint": "当前账户可用额度",
+      "used": "累计消耗（$）",
+      "usedHint": "历史累计使用额度",
+      "requests": "请求次数",
+      "requestsHint": "历史累计 API 请求"
+    },
+    "quickStart": {
+      "title": "快速开始",
+      "heading": "创建密钥，接入 API",
+      "description": "使用独立密钥控制额度、有效期和访问范围。",
+      "action": "管理 API 密钥"
+    },
+    "trend": { "title": "最近 24 小时用量", "description": "按小时汇总的 API 消耗（$）" },
+    "apiInfo": {
+      "title": "API 接入信息",
+      "endpoint": "接口地址",
+      "group": "当前用户分组",
+      "defaultGroup": "默认分组",
+      "safety": "请勿在浏览器或公开仓库中暴露 API 密钥",
+      "copied": "接口地址已复制"
+    },
+    "modelAnalytics": {
+      "title": "模型数据",
+      "filter": "筛选",
+      "filterTitle": "模型分析筛选",
+      "quickRange": "快捷时间范围",
+      "oneDay": "1 天",
+      "sevenDays": "7 天",
+      "fourteenDays": "14 天",
+      "twentyNineDays": "29 天",
+      "customRange": "自定义时间范围",
+      "granularity": "时间粒度",
+      "hour": "小时",
+      "day": "天",
+      "week": "周",
+      "reset": "重置",
+      "apply": "应用筛选",
+      "totalCount": "总调用次数",
+      "totalCountHint": "筛选范围内的调用总量",
+      "totalQuota": "总额度",
+      "totalQuotaHint": "筛选范围内的额度消耗",
+      "totalTokens": "总 Token",
+      "totalTokensHint": "筛选范围内的 Token 用量",
+      "averageRpm": "平均 RPM",
+      "averageRpmHint": "每分钟平均请求数",
+      "averageTpm": "平均 TPM",
+      "averageTpmHint": "每分钟平均 Token 数",
+      "quotaDistribution": "额度分布",
+      "barChart": "柱状图",
+      "areaChart": "面积图",
+      "total": "总计",
+      "callTrend": "调用趋势",
+      "callDistribution": "调用次数占比",
+      "callRanking": "调用次数排行",
+      "noData": "当前筛选范围内暂无模型调用数据",
+      "loadFailed": "模型调用分析数据加载失败"
+    }
+  },
+  "apiKeys": {
+    "create": "新建密钥",
+    "search": "搜索",
+    "searchPlaceholder": "搜索密钥名称",
+    "empty": "暂无 API 密钥",
+    "copy": "复制",
+    "edit": "编辑",
+    "delete": "删除",
+    "createTitle": "新建 API 密钥",
+    "editTitle": "编辑 API 密钥",
+    "neverExpires": "永不过期",
+    "unlimited": "无限额度",
+    "created": "API 密钥创建成功",
+    "updated": "API 密钥更新成功",
+    "deleted": "API 密钥已删除",
+    "copied": "API 密钥已复制",
+    "statusUpdated": "API 密钥状态已更新",
+    "deleteConfirm": "确定删除 API 密钥“{name}”吗？此操作无法撤销。",
+    "filters": {
+      "name": "密钥名称",
+      "namePlaceholder": "请输入密钥名称",
+      "key": "密钥",
+      "keyPlaceholder": "请输入密钥"
+    },
+    "columns": {
+      "name": "名称 / 密钥",
+      "status": "状态",
+      "quota": "剩余 / 已用额度（$）",
+      "expiration": "到期时间",
+      "created": "创建时间",
+      "actions": "操作"
+    },
+    "fields": {
+      "name": "名称",
+      "quota": "剩余额度（$）",
+      "expiration": "到期时间",
+      "unlimited": "无限额度",
+      "allowedIps": "允许的 IP",
+      "allowedIpsHint": "多个 IP 使用英文逗号分隔，留空表示不限制",
+      "modelLimits": "允许的模型",
+      "modelLimitsHint": "请选择允许使用的模型，留空表示不限制"
+    },
+    "validation": { "name": "请输入密钥名称" }
+  },
+  "usageLogs": {
+    "empty": "暂无使用日志",
+    "stream": "流式",
+    "nonStream": "非流式",
+    "viewDetails": "查看详情",
+    "stats": {
+      "quota": "额度消耗（$）",
+      "quotaHint": "当前筛选范围内的累计消耗",
+      "rpm": "RPM",
+      "rpmHint": "最近一分钟请求数",
+      "tpm": "TPM",
+      "tpmHint": "最近一分钟 Token 数"
+    },
+    "filters": {
+      "type": "日志类型",
+      "typePlaceholder": "选择日志类型",
+      "model": "模型",
+      "modelPlaceholder": "输入模型名称",
+      "token": "密钥名称",
+      "tokenPlaceholder": "输入密钥名称",
+      "requestId": "请求 ID",
+      "requestIdPlaceholder": "输入请求 ID",
+      "time": "时间范围",
+      "startTime": "开始时间",
+      "endTime": "结束时间"
+    },
+    "columns": {
+      "time": "时间",
+      "type": "类型",
+      "model": "模型 / 分组",
+      "token": "密钥",
+      "tokens": "输入 / 输出 Token",
+      "quota": "额度消耗（$）",
+      "timing": "耗时",
+      "details": "详情"
+    },
+    "types": {
+      "all": "全部",
+      "unknown": "未知",
+      "topup": "充值",
+      "consume": "消费",
+      "manage": "管理",
+      "system": "系统",
+      "error": "错误",
+      "refund": "退款",
+      "login": "登录"
+    },
+    "details": {
+      "title": "日志详情",
+      "requestId": "请求 ID",
+      "content": "日志内容",
+      "billing": {
+        "title": "计费详情",
+        "mode": "计费模式",
+        "dynamicPricing": "动态计费",
+        "perCall": "按次计费",
+        "perToken": "按 Token 计费",
+        "matchedTier": "匹配层级",
+        "modelPrice": "模型价格",
+        "inputPrice": "输入单价",
+        "outputPrice": "输出单价",
+        "groupRatio": "分组倍率",
+        "userGroupRatio": "用户专属倍率",
+        "totalCost": "总费用"
+      },
+      "quotaAdjustment": {
+        "title": "额度调整详情",
+        "targetUsername": "目标用户名",
+        "userId": "用户 ID",
+        "mode": "调整模式",
+        "requestedQuota": "请求额度",
+        "beforeQuota": "调整前额度",
+        "afterQuota": "调整后额度",
+        "increase": "增加用户额度",
+        "decrease": "减少用户额度",
+        "override": "覆盖用户额度",
+        "notRecorded": "未记录"
+      }
+    }
+  },
+  "profile": {
+    "avatarAlt": "用户头像",
+    "unboundEmail": "未绑定邮箱",
+    "defaultGroup": "默认分组",
+    "roles": { "user": "普通用户", "admin": "管理员", "super": "超级管理员" },
+    "stats": { "balance": "剩余额度（$）", "used": "累计消耗（$）", "requests": "请求次数" },
+    "userInfo": {
+      "title": "用户信息",
+      "description": "查看账户资料并修改显示名称",
+      "displayName": "显示名称",
+      "displayNamePlaceholder": "请输入显示名称",
+      "group": "用户分组",
+      "accountEmail": "账户邮箱",
+      "save": "保存用户信息",
+      "saved": "用户信息已更新"
+    },
+    "email": {
+      "title": "邮箱设置",
+      "description": "设置额度预警邮件的接收方式",
+      "accountHint": "当前账户邮箱：{email}",
+      "notificationEmail": "通知邮箱",
+      "notificationEmailPlaceholder": "留空则使用账户邮箱",
+      "notificationEmailHint": "额度低于预警阈值时，系统会向该邮箱发送通知。",
+      "threshold": "额度预警阈值（$）",
+      "thresholdHint": "账户剩余额度低于该美元金额时触发邮件通知。",
+      "save": "保存邮箱设置",
+      "saved": "邮箱设置已更新"
+    },
+    "security": {
+      "title": "登录与认证",
+      "description": "管理账户密码和用于登录的账户邮箱",
+      "password": "账户密码",
+      "configured": "已设置",
+      "notConfigured": "未设置",
+      "passwordHint": "定期更新密码，以保障账户安全。",
+      "changePassword": "修改密码",
+      "accountEmail": "账户邮箱",
+      "bound": "已绑定",
+      "notBound": "未绑定",
+      "emailHint": "尚未绑定账户邮箱",
+      "changeEmail": "更换邮箱",
+      "bindEmail": "绑定邮箱",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码",
+      "passwordPolicy": "请使用 8–128 个字符。",
+      "cancel": "取消",
+      "newAccountEmail": "新账户邮箱",
+      "emailCodeHint": "验证码已发送至 {email}，请完成邮箱验证。",
+      "newEmailCode": "新邮箱验证码",
+      "oldEmailCode": "原邮箱验证码",
+      "resendCode": "重新发送验证码",
+      "resendCountdown": "{seconds} 秒后可重新发送",
+      "confirmEmail": "确认邮箱",
+      "continue": "继续",
+      "notificationWarning": "操作已成功，但安全通知邮件发送失败。",
+      "passwordChanged": "密码修改成功",
+      "emailBound": "账户邮箱绑定成功",
+      "codeResent": "验证码已重新发送"
+    },
+    "validation": {
+      "displayNameRequired": "请输入显示名称",
+      "displayNameLength": "显示名称长度不能超过 30 个字符",
+      "email": "请输入有效的邮箱地址",
+      "threshold": "请输入额度预警阈值",
+      "currentPassword": "请输入当前密码",
+      "newPassword": "请输入新密码",
+      "confirmPassword": "请再次输入新密码",
+      "passwordLength": "密码长度必须为 8–128 个字符",
+      "passwordMismatch": "两次输入的新密码不一致",
+      "passwordUnchanged": "新密码不能与当前密码相同",
+      "accountEmail": "请输入账户邮箱",
+      "emailCode": "请输入 6 位邮箱验证码"
+    }
+  },
+  "modelSquare": {
+    "title": "模型广场",
+    "description": "发现可用的 AI 模型，比较价格、计费方式与接入端点，为不同场景选择合适的模型。",
+    "searchPlaceholder": "搜索模型名称、供应商、端点或标签",
+    "filters": "筛选",
+    "clearFilters": "清除筛选",
+    "clearAll": "清除全部条件",
+    "all": "全部",
+    "billingType": "计费类型",
+    "endpointType": "端点类型",
+    "vendor": "供应商",
+    "group": "分组",
+    "groups": "可用分组",
+    "tag": "标签",
+    "endpoints": "端点",
+    "model": "模型",
+    "input": "输入价格",
+    "output": "输出价格",
+    "pricePerRequest": "单次价格",
+    "ratio": "倍率",
+    "pricingByGroup": "分组价格",
+    "priceUnit": "价格按每 {unit} Token 展示",
+    "details": "详情",
+    "actions": "操作",
+    "overview": "概览",
+    "api": "API",
+    "unknownVendor": "未知供应商",
+    "noDescription": "暂无模型说明",
+    "noEndpoints": "暂无端点信息",
+    "empty": "没有符合当前条件的模型",
+    "resultCount": "显示 {filtered} / {total} 个模型",
+    "rechargePrice": "充值价",
+    "rechargePriceHint": "按系统充值倍率展示实际充值成本",
+    "cardView": "卡片视图",
+    "tableView": "表格视图",
+    "refresh": "刷新模型广场",
+    "quotaTypes": {
+      "all": "全部模型",
+      "token": "按 Token 计费",
+      "request": "按次计费",
+      "task": "动态计费"
+    },
+    "sort": {
+      "name": "按名称排序",
+      "priceLow": "价格从低到高",
+      "priceHigh": "价格从高到低"
+    }
   },
   "exceptionPage": {
     "403": "抱歉，您无权访问该页面",
@@ -246,6 +544,11 @@
       "title": "仪表盘",
       "console": "工作台"
     },
+    "modelSquare": { "title": "模型广场" },
+    "modelData": { "title": "模型数据" },
+    "apiKeys": { "title": "API 密钥", "list": "密钥管理" },
+    "usageLogs": { "title": "使用日志" },
+    "profile": { "title": "个人资料" },
     "result": {
       "title": "结果页面",
       "success": "成功页",

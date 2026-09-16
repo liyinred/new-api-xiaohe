@@ -64,14 +64,36 @@ declare namespace Api {
   namespace Auth {
     /** 登录参数 */
     interface LoginParams {
-      userName: string
+      username: string
       password: string
     }
 
     /** 登录响应 */
     interface LoginResponse {
-      token: string
-      refreshToken: string
+      access_token: string
+      token_type: string
+      access_expires_at: number
+      session: {
+        sid: string
+        current: boolean
+        login_method: string
+        expires_at: number
+      }
+      user: OfficialUserInfo
+    }
+
+    /** 官方接口返回的用户信息 */
+    interface OfficialUserInfo {
+      id: number
+      username: string
+      display_name?: string
+      email?: string
+      role: number
+      status?: number
+      group?: string
+      quota?: number
+      used_quota?: number
+      request_count?: number
     }
 
     /** 用户信息 */
@@ -82,6 +104,10 @@ declare namespace Api {
       userName: string
       email: string
       avatar?: string
+      quota?: number
+      usedQuota?: number
+      requestCount?: number
+      group?: string
     }
   }
 
