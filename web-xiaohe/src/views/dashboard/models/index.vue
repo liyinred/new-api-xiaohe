@@ -165,6 +165,7 @@
   import { fetchSystemStatus } from '@/api/auth'
   import { fetchUserQuotaData, type QuotaDataItem } from '@/api/dashboard'
   import { useUserStore } from '@/store/modules/user'
+  import { formatTokenMetric } from '@/utils/number'
   import { formatQuotaUsd, resolveQuotaPerUnit } from '@/utils/quota'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -244,7 +245,7 @@
     },
     {
       title: t('dashboard.modelAnalytics.totalTokens'),
-      value: formatMetric(summary.value.totalTokens, locale.value),
+      value: formatTokenMetric(summary.value.totalTokens, locale.value),
       description: t('dashboard.modelAnalytics.totalTokensHint'),
       icon: 'ri:stack-line',
       iconStyle: 'bg-info'
@@ -258,7 +259,7 @@
     },
     {
       title: t('dashboard.modelAnalytics.averageTpm'),
-      value: formatMetric(summary.value.averageTpm, locale.value, 3),
+      value: formatTokenMetric(summary.value.averageTpm, locale.value),
       description: t('dashboard.modelAnalytics.averageTpmHint'),
       icon: 'ri:flashlight-line',
       iconStyle: 'bg-warning'

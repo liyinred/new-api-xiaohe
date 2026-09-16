@@ -230,7 +230,7 @@
     },
     "trend": { "title": "Last 24 hours", "description": "Hourly API usage ($)" },
     "apiInfo": {
-      "title": "API connection",
+      "title": "API endpoint information",
       "endpoint": "Endpoint",
       "group": "Current user group",
       "defaultGroup": "Default group",

@@ -16,7 +16,7 @@
   import { nextTick } from 'vue'
   import { useSettingStore } from '@/store/modules/setting'
   import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
-  import { useClipboard } from '@vueuse/core'
+  import { copyToClipboard } from '@/utils/clipboard'
   import { useI18n } from 'vue-i18n'
   import { MenuThemeEnum } from '@/enums/appEnum'
   import { useTheme } from '@/hooks/core/useTheme'
@@ -25,7 +25,6 @@
 
   const { t } = useI18n()
   const settingStore = useSettingStore()
-  const { copy, copied } = useClipboard()
   const { switchThemeStyles } = useTheme()
 
   /** 枚举映射表 */
@@ -129,17 +128,18 @@
 
   /**
    * 复制配置到剪贴板
+   * @returns 无返回值，复制失败时显示错误提示
    */
   const handleCopyConfig = async () => {
     try {
       const configText = generateConfigCode()
-      await copy(configText)
-
-      if (copied.value) {
+      if (await copyToClipboard(configText)) {
         ElMessage.success({
           message: t('setting.actions.copySuccess'),
           duration: 3000
         })
+      } else {
+        ElMessage.error(t('setting.actions.copyFailed'))
       }
     } catch (error) {
       console.error('复制配置失败:', error)

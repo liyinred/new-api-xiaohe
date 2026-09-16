@@ -113,21 +113,26 @@
     quotaToUsd,
     resolveQuotaPerUnit
   } from '@/utils/quota'
-  import { useClipboard } from '@vueuse/core'
+  import { copyToClipboard } from '@/utils/clipboard'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
   defineOptions({ name: 'Console' })
 
   /**
-   * 按系统 API 配置、公开服务地址和当前域名的优先级生成接口地址
+   * 优先使用管理员 API 配置和非默认服务地址，并补全 OpenAI API 的 /v1 后缀
    * @param status 系统公开状态
-   * @returns 去除末尾斜杠的接口基础地址
+   * @returns 以 /v1 结尾的接口端点地址
    */
   const resolveApiEndpoint = (status?: SystemStatus): string => {
+    const serverAddress = status?.server_address?.trim().replace(/\/+$/, '')
+    // 官方默认 ServerAddress 不是定制整合入口，使用当前页面的 origin。
     const source =
-      status?.api_info?.[0]?.url?.trim() || status?.server_address?.trim() || window.location.origin
-    return source.replace(/\/+$/, '')
+      status?.api_info?.[0]?.url?.trim() ||
+      (serverAddress !== 'http://localhost:3000' ? serverAddress : '') ||
+      window.location.origin
+    const normalizedSource = source.replace(/\/+$/, '')
+    return normalizedSource.endsWith('/v1') ? normalizedSource : `${normalizedSource}/v1`
   }
 
   const { t } = useI18n()
@@ -137,7 +142,6 @@
   const usageData = ref<QuotaDataItem[]>([])
   const quotaPerUnit = ref(DEFAULT_QUOTA_PER_UNIT)
   const apiEndpoint = ref(resolveApiEndpoint())
-  const { copy } = useClipboard({ source: apiEndpoint })
   const overview = computed(() => ({
     quota: Number(userStore.info.quota || 0),
     usedQuota: Number(userStore.info.usedQuota || 0),
@@ -208,12 +212,15 @@
   }
 
   /**
-   * 复制 API 接入地址
+   * 复制 API 端点地址
    * @returns 无返回值
    */
   const copyEndpoint = async (): Promise<void> => {
-    await copy(apiEndpoint.value)
-    ElMessage.success(t('dashboard.apiInfo.copied'))
+    if (await copyToClipboard(apiEndpoint.value)) {
+      ElMessage.success(t('dashboard.apiInfo.copied'))
+    } else {
+      ElMessage.error(t('setting.actions.copyFailed'))
+    }
   }
 
   onMounted(loadOverview)

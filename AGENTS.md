@@ -1,4 +1,5 @@
 - `web`文件夹: newapi官方前端项目
 - `web-xiaohe`文件夹: xiaohe定制前端Vue3项目
 - `docs-xiaohe`文件夹: xiaohe定制项目说明文档
+- `xiaohe-server`文件夹: xiaohe定制整合系统
 - 不开启Vue3端口，不执行`build`操作

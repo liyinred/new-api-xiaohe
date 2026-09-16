@@ -230,7 +230,7 @@
     },
     "trend": { "title": "最近 24 小时用量", "description": "按小时汇总的 API 消耗（$）" },
     "apiInfo": {
-      "title": "API 接入信息",
+      "title": "API端点信息",
       "endpoint": "接口地址",
       "group": "当前用户分组",
       "defaultGroup": "默认分组",

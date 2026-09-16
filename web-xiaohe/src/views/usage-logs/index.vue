@@ -20,7 +20,7 @@
         icon="ri:flashlight-line"
         icon-style="bg-warning"
         :title="$t('usageLogs.stats.tpm')"
-        :display-value="formatNumber(stats.tpm)"
+        :display-value="formatTokenMetric(stats.tpm, locale)"
         :description="$t('usageLogs.stats.tpmHint')"
       />
     </div>
@@ -71,9 +71,9 @@
         </template>
         <template #tokens="{ row }">
           <div class="font-mono text-xs tabular-nums">
-            <span>{{ formatNumber(row.prompt_tokens) }}</span>
+            <span>{{ formatTokenMetric(row.prompt_tokens, locale) }}</span>
             <span class="mx-1 text-g-400">/</span>
-            <span>{{ formatNumber(row.completion_tokens) }}</span>
+            <span>{{ formatTokenMetric(row.completion_tokens, locale) }}</span>
           </div>
         </template>
         <template #quota="{ row }">
@@ -170,6 +170,7 @@
     formatLogQuotaUsd,
     resolveQuotaPerUnit
   } from '@/utils/quota'
+  import { formatTokenMetric } from '@/utils/number'
   import { useI18n } from 'vue-i18n'
 
   defineOptions({ name: 'UsageLogs' })
@@ -207,7 +208,7 @@
     value: string
   }
 
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const loading = ref(false)
   const logs = ref<UsageLog[]>([])
   const stats = reactive<UsageLogStats>({ quota: 0, rpm: 0, tpm: 0 })

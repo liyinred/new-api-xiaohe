@@ -27,6 +27,7 @@ tiktoken_cache
 .claude
 .cursor
 .trae
+dist
 
 electron/node_modules
 electron/dist

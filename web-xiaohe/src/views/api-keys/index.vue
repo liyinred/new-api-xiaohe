@@ -158,7 +158,7 @@
     resolveQuotaPerUnit,
     usdToQuota
   } from '@/utils/quota'
-  import { useClipboard } from '@vueuse/core'
+  import { copyToClipboard } from '@/utils/clipboard'
   import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -170,7 +170,6 @@
   }
 
   const { t } = useI18n()
-  const { copy } = useClipboard()
   const loading = ref(false)
   const submitting = ref(false)
   const modelsLoading = ref(false)
@@ -429,8 +428,11 @@
    */
   const copyToken = async (token: ApiToken): Promise<void> => {
     const result = await fetchTokenKey(token.id)
-    await copy(result.key)
-    ElMessage.success(t('apiKeys.copied'))
+    if (await copyToClipboard(result.key)) {
+      ElMessage.success(t('apiKeys.copied'))
+    } else {
+      ElMessage.error(t('setting.actions.copyFailed'))
+    }
   }
 
   /**
