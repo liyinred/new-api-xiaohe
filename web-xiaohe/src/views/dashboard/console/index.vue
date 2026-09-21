@@ -70,6 +70,7 @@
           height="18rem"
           :loading="loading"
           :value-prefix="getQuotaDisplayPrefix(systemStatus)"
+          :value-precision="4"
           show-area-color
         />
       </ElCard>
@@ -113,6 +114,7 @@
     quotaToDisplayAmount
   } from '@/utils/quota'
   import { copyToClipboard } from '@/utils/clipboard'
+  import { formatChartTime } from '@/utils/chart-time'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
 
@@ -154,19 +156,10 @@
   const chartData = computed(() =>
     usageData.value.map((item) => quotaToDisplayAmount(Number(item.quota || 0), systemStatus.value))
   )
+  /** 生成最近用量图的时间横轴标签。@returns 格式化的时间标签 */
   const chartLabels = computed(() =>
-    usageData.value.map((item) => formatUsageTime(item.created_at))
+    usageData.value.map((item) => formatChartTime(item.created_at))
   )
-
-  /**
-   * 将秒级时间戳格式化为小时标签
-   * @param timestamp 秒级时间戳
-   * @returns 小时与分钟文本
-   */
-  const formatUsageTime = (timestamp: number): string =>
-    new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(
-      timestamp * 1000
-    )
 
   /**
    * 按管理员设置格式化内部 quota

@@ -20,8 +20,6 @@
     },
     "user": {
       "userCenter": "个人资料",
-      "docs": "使用文档",
-      "github": "Github",
       "lockScreen": "锁定屏幕",
       "logout": "退出登录"
     },
@@ -129,7 +127,7 @@
   },
   "login": {
     "leftView": {
-      "title": "面向多模型接入的一站式 TokenHub",
+      "title": "小合Hub：一站式多模型接入平台",
       "subTitle": "统一管理 API 密钥、模型额度与调用记录，让多模型接入更简单"
     },
     "title": "欢迎回来",
@@ -215,9 +213,9 @@
     "usage": {
       "title": "用量概览",
       "description": "查看账户余额、累计消耗与请求情况",
-      "balance": "剩余额度（$）",
+      "balance": "剩余额度",
       "balanceHint": "当前账户可用额度",
-      "used": "累计消耗（$）",
+      "used": "累计消耗",
       "usedHint": "历史累计使用额度",
       "requests": "请求次数",
       "requestsHint": "历史累计 API 请求"
@@ -228,7 +226,7 @@
       "description": "使用独立密钥控制额度、有效期和访问范围。",
       "action": "管理 API 密钥"
     },
-    "trend": { "title": "最近 24 小时用量", "description": "按小时汇总的 API 消耗（$）" },
+    "trend": { "title": "最近 24 小时用量", "description": "按小时汇总的 API 消耗" },
     "apiInfo": {
       "title": "API端点信息",
       "endpoint": "接口地址",
@@ -238,7 +236,7 @@
       "copied": "接口地址已复制"
     },
     "modelAnalytics": {
-      "title": "模型数据",
+      "title": "模型调用数据",
       "filter": "筛选",
       "filterTitle": "模型分析筛选",
       "quickRange": "快捷时间范围",
@@ -255,7 +253,7 @@
       "apply": "应用筛选",
       "totalCount": "总调用次数",
       "totalCountHint": "筛选范围内的调用总量",
-      "totalQuota": "总额度",
+      "totalQuota": "消耗额度",
       "totalQuotaHint": "筛选范围内的额度消耗",
       "totalTokens": "总 Token",
       "totalTokensHint": "筛选范围内的 Token 用量",
@@ -263,7 +261,7 @@
       "averageRpmHint": "每分钟平均请求数",
       "averageTpm": "平均 TPM",
       "averageTpmHint": "每分钟平均 Token 数",
-      "quotaDistribution": "额度分布",
+      "quotaDistribution": "消耗额度分布",
       "barChart": "柱状图",
       "areaChart": "面积图",
       "total": "总计",
@@ -301,14 +299,14 @@
     "columns": {
       "name": "名称 / 密钥",
       "status": "状态",
-      "quota": "剩余 / 已用额度（$）",
+      "quota": "剩余 / 已用额度",
       "expiration": "到期时间",
       "created": "创建时间",
       "actions": "操作"
     },
     "fields": {
       "name": "名称",
-      "quota": "剩余额度（$）",
+      "quota": "剩余额度",
       "expiration": "到期时间",
       "unlimited": "无限额度",
       "allowedIps": "允许的 IP",
@@ -324,7 +322,7 @@
     "nonStream": "非流式",
     "viewDetails": "查看详情",
     "stats": {
-      "quota": "额度消耗（$）",
+      "quota": "额度消耗",
       "quotaHint": "当前筛选范围内的累计消耗",
       "rpm": "RPM",
       "rpmHint": "最近一分钟请求数",
@@ -350,7 +348,7 @@
       "model": "模型 / 分组",
       "token": "密钥",
       "tokens": "输入 / 输出 Token",
-      "quota": "额度消耗（$）",
+      "quota": "额度消耗",
       "timing": "耗时",
       "details": "详情"
     },
@@ -368,7 +366,6 @@
     "details": {
       "title": "日志详情",
       "requestId": "请求 ID",
-      "content": "日志内容",
       "billing": {
         "title": "计费详情",
         "mode": "计费模式",
@@ -403,7 +400,7 @@
     "unboundEmail": "未绑定邮箱",
     "defaultGroup": "默认分组",
     "roles": { "user": "普通用户", "admin": "管理员", "super": "超级管理员" },
-    "stats": { "balance": "剩余额度（$）", "used": "累计消耗（$）", "requests": "请求次数" },
+    "stats": { "balance": "剩余额度", "used": "累计消耗", "requests": "请求次数" },
     "userInfo": {
       "title": "用户信息",
       "description": "查看账户资料并修改显示名称",
@@ -421,7 +418,7 @@
       "notificationEmail": "通知邮箱",
       "notificationEmailPlaceholder": "留空则使用账户邮箱",
       "notificationEmailHint": "额度低于预警阈值时，系统会向该邮箱发送通知。",
-      "threshold": "额度预警阈值（$）",
+      "threshold": "额度预警阈值",
       "thresholdHint": "账户剩余额度低于该美元金额时触发邮件通知。",
       "save": "保存邮箱设置",
       "saved": "邮箱设置已更新"

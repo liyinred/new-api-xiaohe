@@ -92,14 +92,9 @@
     getGridWithLegend
   } = useChartComponent({
     props,
+    /** 检查双向柱状图是否缺少数据项；零值仍交给图表渲染。@returns 是否为空数据 */
     checkEmpty: () => {
-      return (
-        props.isEmpty ||
-        !props.positiveData.length ||
-        !props.negativeData.length ||
-        (props.positiveData.every((val) => val === 0) &&
-          props.negativeData.every((val) => val === 0))
-      )
+      return !props.positiveData.length && !props.negativeData.length
     },
     watchSources: [
       () => props.positiveData,

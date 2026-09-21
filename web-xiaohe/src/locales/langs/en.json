@@ -20,8 +20,6 @@
     },
     "user": {
       "userCenter": "Profile",
-      "docs": "Document",
-      "github": "Github",
       "lockScreen": "Lock screen",
       "logout": "Log out"
     },
@@ -129,7 +127,7 @@
   },
   "login": {
     "leftView": {
-      "title": "A one-stop TokenHub for multi-model access",
+      "title": "小合Hub for multi-model access",
       "subTitle": "Manage API keys, model quotas, and usage records in one place for simpler multi-model integration"
     },
     "title": "Welcome back",
@@ -215,9 +213,9 @@
     "usage": {
       "title": "Usage at a glance",
       "description": "Monitor balance, total usage, and request volume",
-      "balance": "Credit remaining ($)",
+      "balance": "Credit remaining",
       "balanceHint": "Available account credit",
-      "used": "Total usage ($)",
+      "used": "Total usage",
       "usedHint": "All-time credit usage",
       "requests": "Requests",
       "requestsHint": "All-time API requests"
@@ -228,7 +226,7 @@
       "description": "Use separate keys to control quotas, expiration, and access scope.",
       "action": "Manage API keys"
     },
-    "trend": { "title": "Last 24 hours", "description": "Hourly API usage ($)" },
+    "trend": { "title": "Last 24 hours", "description": "Hourly API usage" },
     "apiInfo": {
       "title": "API endpoint information",
       "endpoint": "Endpoint",
@@ -238,7 +236,7 @@
       "copied": "Endpoint copied"
     },
     "modelAnalytics": {
-      "title": "Model Data",
+      "title": "Model Call Data",
       "filter": "Filter",
       "filterTitle": "Model analytics filters",
       "quickRange": "Quick range",
@@ -255,7 +253,7 @@
       "apply": "Apply filters",
       "totalCount": "Total count",
       "totalCountHint": "Calls in the selected range",
-      "totalQuota": "Total quota",
+      "totalQuota": "Quota consumed",
       "totalQuotaHint": "Quota consumed in the selected range",
       "totalTokens": "Total tokens",
       "totalTokensHint": "Tokens used in the selected range",
@@ -263,7 +261,7 @@
       "averageRpmHint": "Average requests per minute",
       "averageTpm": "Average TPM",
       "averageTpmHint": "Average tokens per minute",
-      "quotaDistribution": "Quota distribution",
+      "quotaDistribution": "Quota consumption breakdown",
       "barChart": "Bar chart",
       "areaChart": "Area chart",
       "total": "Total",
@@ -301,14 +299,14 @@
     "columns": {
       "name": "Name / key",
       "status": "Status",
-      "quota": "Remaining / used ($)",
+      "quota": "Remaining / used",
       "expiration": "Expiration",
       "created": "Created",
       "actions": "Actions"
     },
     "fields": {
       "name": "Name",
-      "quota": "Remaining quota ($)",
+      "quota": "Remaining quota",
       "expiration": "Expiration",
       "unlimited": "Unlimited quota",
       "allowedIps": "Allowed IPs",
@@ -324,7 +322,7 @@
     "nonStream": "Non-streaming",
     "viewDetails": "View details",
     "stats": {
-      "quota": "Quota used ($)",
+      "quota": "Quota used",
       "quotaHint": "Total usage in the selected range",
       "rpm": "RPM",
       "rpmHint": "Requests in the last minute",
@@ -350,7 +348,7 @@
       "model": "Model / group",
       "token": "Key",
       "tokens": "Input / output tokens",
-      "quota": "Quota used ($)",
+      "quota": "Quota used",
       "timing": "Timing",
       "details": "Details"
     },
@@ -368,7 +366,6 @@
     "details": {
       "title": "Log details",
       "requestId": "Request ID",
-      "content": "Log content",
       "billing": {
         "title": "Billing details",
         "mode": "Billing mode",
@@ -404,8 +401,8 @@
     "defaultGroup": "Default group",
     "roles": { "user": "User", "admin": "Admin", "super": "Super admin" },
     "stats": {
-      "balance": "Credit remaining ($)",
-      "used": "Total usage ($)",
+      "balance": "Credit remaining",
+      "used": "Total usage",
       "requests": "Requests"
     },
     "userInfo": {
@@ -425,7 +422,7 @@
       "notificationEmail": "Notification email",
       "notificationEmailPlaceholder": "Leave empty to use the account email",
       "notificationEmailHint": "A warning is sent here when the balance falls below the threshold.",
-      "threshold": "Quota warning threshold ($)",
+      "threshold": "Quota warning threshold",
       "thresholdHint": "Send an email when the remaining quota falls below this USD amount.",
       "save": "Save email settings",
       "saved": "Email settings updated"

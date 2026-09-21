@@ -35,9 +35,8 @@
   // 使用新的图表组件抽象
   const { chartRef, isDark, getAnimationConfig, getTooltipStyle } = useChartComponent({
     props,
-    checkEmpty: () => {
-      return !props.data?.length || props.data.every((item) => item.value.every((val) => val === 0))
-    },
+    /** 检查是否缺少雷达系列；零值仍交给图表渲染。@returns 是否为空数据 */
+    checkEmpty: () => !props.data?.length,
     watchSources: [() => props.data, () => props.indicator, () => props.colors],
     generateOptions: (): EChartsOption => {
       return {

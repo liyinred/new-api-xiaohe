@@ -82,9 +82,8 @@
     props: {
       height: `${props.height}rem`,
       loading: false,
-      isEmpty: props.data.every((val) => val === 0)
+      isEmpty: false
     },
-    checkEmpty: () => props.data.every((val) => val === 0),
     watchSources: [
       () => props.data,
       () => props.color,

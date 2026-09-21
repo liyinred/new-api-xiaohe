@@ -20,3 +20,21 @@ export function formatTokenMetric(value: number, locale: string): string {
 
   return `${formattedValue}${unit.suffix}`
 }
+
+/**
+ * 按可选精度和前缀格式化图表中的数值
+ * @param value 图表数值
+ * @param prefix 数值前缀
+ * @param precision 最大小数位；未指定时保留原始显示
+ * @returns 格式化后的图表数值文本
+ */
+export function formatChartValue(value: number, prefix = '', precision?: number): string {
+  const formatted =
+    precision === undefined
+      ? String(value)
+      : new Intl.NumberFormat(undefined, {
+          maximumFractionDigits: precision,
+          useGrouping: false
+        }).format(value)
+  return `${prefix}${formatted}`
+}

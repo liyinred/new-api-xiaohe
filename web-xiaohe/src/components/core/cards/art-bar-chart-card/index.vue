@@ -64,9 +64,10 @@
     props: {
       height: `${props.height}rem`,
       loading: false,
-      isEmpty: !props.chartData?.length || props.chartData.every((val) => val === 0)
+      isEmpty: false
     },
-    checkEmpty: () => !props.chartData?.length || props.chartData.every((val) => val === 0),
+    /** 检查是否缺少柱状数据项；零值仍交给图表渲染。@returns 是否为空数据 */
+    checkEmpty: () => !props.chartData?.length,
     watchSources: [() => props.chartData, () => props.color, () => props.barWidth],
     generateOptions: (): EChartsOption => {
       const computedColor = props.color || useChartOps().themeColor

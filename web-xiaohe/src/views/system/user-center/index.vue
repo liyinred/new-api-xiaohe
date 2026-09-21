@@ -12,7 +12,6 @@
           <div class="flex flex-wrap items-center gap-2">
             <h1 class="truncate text-2xl font-semibold text-g-900">{{ displayName }}</h1>
             <ElTag effect="light">{{ roleLabel }}</ElTag>
-            <ElTag type="info" effect="light">ID {{ profile?.id || '-' }}</ElTag>
           </div>
           <p class="mt-2 truncate text-sm text-g-500">
             @{{ profile?.username || '-' }} · {{ profile?.email || $t('profile.unboundEmail') }}
@@ -44,7 +43,7 @@
       </div>
     </section>
 
-    <div class="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:items-start">
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:items-stretch">
       <ElCard class="art-card" shadow="never">
         <template #header>
           <div class="flex items-center gap-3">

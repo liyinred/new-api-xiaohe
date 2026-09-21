@@ -1,7 +1,7 @@
 import { AppRouteRecord } from '@/types/router'
 import { dashboardRoutes } from './dashboard'
-import { modelDataRoutes } from './model-data'
 import { apiKeysRoutes } from './api-keys'
+import { modelDataRoutes } from './model-data'
 import { usageLogsRoutes } from './usage-logs'
 import { profileRoutes } from './profile'
 import { modelSquareRoutes } from './model-square'
@@ -12,8 +12,8 @@ import { modelSquareRoutes } from './model-square'
 export const routeModules: AppRouteRecord[] = [
   modelSquareRoutes,
   dashboardRoutes,
-  modelDataRoutes,
   apiKeysRoutes,
+  modelDataRoutes,
   usageLogsRoutes,
   profileRoutes
 ]

@@ -40,10 +40,10 @@
   const { chartRef, isDark, getAnimationConfig, getTooltipStyle, getLegendStyle } =
     useChartComponent({
       props,
-      checkEmpty: () => {
-        return !props.data?.length || props.data.every((item) => item.value === 0)
-      },
+      /** 检查是否缺少数据项；零值仍交给图表渲染。@returns 是否为空数据 */
+      checkEmpty: () => !props.data?.length,
       watchSources: [() => props.data, () => props.centerText],
+      /** 生成环形图、中心文字与扇区标签配置。@returns ECharts 环形图配置 */
       generateOptions: (): EChartsOption => {
         // 根据图例位置计算环形图中心位置
         const getCenterPosition = (): [string, string] => {
@@ -76,7 +76,7 @@
               type: 'pie',
               radius: props.radius,
               center: getCenterPosition(),
-              avoidLabelOverlap: false,
+              avoidLabelOverlap: props.showLabel,
               itemStyle: {
                 borderRadius: props.borderRadius,
                 borderColor: isDark.value ? '#2c2c2c' : '#fff',
@@ -119,6 +119,7 @@
             top: centerPos[1],
             textAlign: 'center',
             textVerticalAlign: 'middle',
+            padding: 0,
             textStyle: {
               fontSize: 18,
               fontWeight: 500,

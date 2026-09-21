@@ -47,19 +47,25 @@
       <ElEmpty v-if="!loading && !hasData" :description="t('dashboard.modelAnalytics.noData')" />
       <ArtBarChart
         v-else-if="quotaChartMode === 'bar'"
-        :data="displayChartData.quotaByTime"
+        :data="displayChartData.quotaSeries"
         :x-axis-data="chartData.timeLabels"
         height="20rem"
         :loading="loading"
         :value-prefix="getQuotaDisplayPrefix(systemStatus)"
+        :value-precision="4"
+        stack
+        show-legend
       />
       <ArtLineChart
         v-else
-        :data="displayChartData.quotaAreaSeries"
+        :data="displayChartData.quotaSeries"
         :x-axis-data="chartData.timeLabels"
         height="20rem"
         :loading="loading"
         :value-prefix="getQuotaDisplayPrefix(systemStatus)"
+        :value-precision="4"
+        stack
+        show-legend
         show-area-color
       />
     </ElCard>
@@ -103,13 +109,16 @@
         height="20rem"
         :loading="loading"
         show-legend
+        show-label
       />
       <ArtHBarChart
         v-else
-        :data="chartData.callRankingValues"
+        :data="chartData.callRankingSeries"
         :x-axis-data="chartData.callRankingLabels"
         height="20rem"
         :loading="loading"
+        stack
+        show-legend
       />
     </ElCard>
 
@@ -211,32 +220,29 @@
     (userStore.info.roles || []).some((role) => role === 'R_SUPER' || role === 'R_ADMIN')
   )
   const summary = computed(() => summarizeAnalytics(quotaData.value, filters.value))
+  /** 汇总模型分析图表数据。@returns 图表使用的数据与时间标签 */
   const chartData = computed(() =>
     buildAnalyticsChartData(
       quotaData.value,
-      filters.value.granularity,
-      locale.value,
       resolveQuotaPerUnit(systemStatus.value?.quota_per_unit)
     )
   )
   const hasData = computed(() => quotaData.value.length > 0)
   const totalQuotaLabel = computed(() => formatQuota(summary.value.totalQuota, systemStatus.value))
   /**
-   * 将图表的美元额度转换为管理员设置的展示单位
-   * @returns 额度柱状图与面积图数据
+   * 将各模型的美元额度转换为管理员设置的展示单位
+   * @returns 各模型堆叠图共用的额度系列
    */
   const displayChartData = computed(() => {
-    const quotaByTime = chartData.value.quotaByTime.map((amount) =>
-      quotaToDisplayAmount(
-        amount * resolveQuotaPerUnit(systemStatus.value?.quota_per_unit),
-        systemStatus.value
-      )
-    )
     return {
-      quotaByTime,
-      quotaAreaSeries: chartData.value.quotaAreaSeries.map((series) => ({
+      quotaSeries: chartData.value.quotaSeries.map((series) => ({
         ...series,
-        data: quotaByTime
+        data: series.data.map((amount) =>
+          quotaToDisplayAmount(
+            amount * resolveQuotaPerUnit(systemStatus.value?.quota_per_unit),
+            systemStatus.value
+          )
+        )
       }))
     }
   })

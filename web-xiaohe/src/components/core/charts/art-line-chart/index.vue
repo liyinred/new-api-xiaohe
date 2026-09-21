@@ -14,6 +14,7 @@
   import { getCssVar, hexToRgba } from '@/utils/ui'
   import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
   import type { LineChartProps, LineDataItem } from '@/types/component/chart'
+  import { formatChartValue } from '@/utils/number'
 
   defineOptions({ name: 'ArtLineChart' })
 
@@ -26,6 +27,7 @@
 
     // 数据配置
     data: () => [0, 0, 0, 0, 0, 0, 0],
+    stack: false,
     xAxisData: () => [],
     lineWidth: 2.5,
     showAreaColor: false,
@@ -107,13 +109,6 @@
   // 获取颜色配置（优化：缓存主题色）
   const primaryColor = computed(() => getCssVar('--el-color-primary'))
 
-  /**
-   * 为图表数值添加配置的前缀
-   * @param value 图表数值
-   * @returns 带前缀的数值文本
-   */
-  const formatChartValue = (value: number): string => `${props.valuePrefix || ''}${value}`
-
   const getColor = (customColor?: string, index?: number): string => {
     if (customColor) return customColor
     if (index !== undefined) return props.colors![index % props.colors!.length]
@@ -161,10 +156,15 @@
     }
   }
 
-  // 创建系列配置
+  /**
+   * 创建折线系列配置并保留可选的堆叠分组
+   * @param config 系列数据、颜色与样式配置
+   * @returns ECharts 折线系列配置
+   */
   const createSeriesItem = (config: {
     name?: string
     data: number[]
+    stack?: string
     color?: string
     smooth?: boolean
     symbol?: string
@@ -175,6 +175,7 @@
     return {
       name: config.name,
       data: config.data,
+      stack: config.stack,
       type: 'line' as const,
       color: config.color,
       smooth: config.smooth ?? props.smooth,
@@ -212,9 +213,11 @@
       tooltip: props.showTooltip
         ? {
             ...getTooltipStyle(),
-            valueFormatter: props.valuePrefix
-              ? (value: unknown) => formatChartValue(Number(value))
-              : undefined
+            valueFormatter:
+              props.valuePrefix || props.valuePrecision !== undefined
+                ? (value: unknown) =>
+                    formatChartValue(Number(value), props.valuePrefix, props.valuePrecision)
+                : undefined
           }
         : undefined,
       xAxis: {
@@ -228,10 +231,13 @@
       yAxis: {
         type: 'value',
         min: 0,
-        max: maxValue.value,
+        max: props.stack ? undefined : maxValue.value || undefined,
         axisLabel: {
           ...getAxisLabelStyle(props.showAxisLabel),
-          formatter: props.valuePrefix ? (value: number) => formatChartValue(value) : undefined
+          formatter:
+            props.valuePrefix || props.valuePrecision !== undefined
+              ? (value: number) => formatChartValue(value, props.valuePrefix, props.valuePrecision)
+              : undefined
         },
         axisLine: getAxisLineStyle(props.showAxisLine),
         splitLine: getSplitLineStyle(props.showSplitLine)
@@ -253,6 +259,7 @@
         return createSeriesItem({
           name: item.name,
           data: item.data,
+          stack: props.stack ? 'total' : undefined,
           color: itemColor,
           smooth: item.smooth,
           symbol: item.symbol,
@@ -326,21 +333,18 @@
     }
   }
 
-  // 空数据检查函数
+  /** 检查折线系列是否缺少数据项；零值仍交给图表渲染。@returns 是否为空数据 */
   const checkIsEmpty = () => {
     // 检查单数据情况
     if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
       const singleData = props.data as number[]
-      return !singleData.length || singleData.every((val) => val === 0)
+      return !singleData.length
     }
 
     // 检查多数据情况
     if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
       const multiData = props.data as LineDataItem[]
-      return (
-        !multiData.length ||
-        multiData.every((item) => !item.data?.length || item.data.every((val) => val === 0))
-      )
+      return !multiData.length || multiData.every((item) => !item.data?.length)
     }
 
     return true

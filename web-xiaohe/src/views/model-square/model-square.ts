@@ -47,7 +47,9 @@ export interface DisplayPricingTier {
  * @param model 模型定价信息
  * @returns 是否存在表达式计费
  */
-export function hasExpressionPricing(model: PricingModel): boolean {
+export function hasExpressionPricing(
+  model: Pick<PricingModel, 'billing_mode' | 'billing_expr' | 'billing_plugin_variants'>
+): boolean {
   return (
     model.billing_mode === 'tiered_expr' ||
     Boolean(
@@ -59,9 +61,13 @@ export function hasExpressionPricing(model: PricingModel): boolean {
 /**
  * 解析可安全展示的线性分档价格，不解释任意计费表达式
  * @param model 模型定价信息
- * @returns 顺序分档价格；复杂表达式返回空数组
+ * @param matchedLabel 日志已记录的命中档位；提供时仅返回该档位的线性价格
+ * @returns 顺序分档价格或唯一命中档位价格；无法安全提取时返回空数组
  */
-export function getDisplayPricingTiers(model: PricingModel): DisplayPricingTier[] {
+export function getDisplayPricingTiers(
+  model: Pick<PricingModel, 'billing_mode' | 'billing_expr' | 'billing_plugin_variants'>,
+  matchedLabel?: string
+): DisplayPricingTier[] {
   if (!hasExpressionPricing(model) || model.billing_plugin_variants?.length) return []
   const expression = (model.billing_expr || '').trim().replace(/^v1:/, '').trim()
   const tiers: DisplayPricingTier[] = []
@@ -96,6 +102,12 @@ export function getDisplayPricingTiers(model: PricingModel): DisplayPricingTier[
     tiers.push(tier)
     return 'T'
   })
+  if (matchedLabel && !structure.includes('INVALID')) {
+    const matches = tiers.filter(
+      (tier) => tier.label.trim().toLowerCase() === matchedLabel.trim().toLowerCase()
+    )
+    return matches.length === 1 ? matches : []
+  }
   if (tiers.length && /^(?:len\s*(?:<=?|>=?)\s*\d+\s*\?\s*T\s*:\s*)*T$/.test(structure)) {
     const branch = structure.match(/^([^?]+)\?\s*T\s*:\s*T$/)
     if (branch) tiers[0].condition = branch[1].trim()

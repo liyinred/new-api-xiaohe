@@ -142,13 +142,6 @@
             </div>
           </div>
         </div>
-        <div>
-          <p class="mb-2 text-sm font-medium text-g-800">{{ $t('usageLogs.details.content') }}</p>
-          <pre
-            class="max-h-52 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-g-100 p-3 text-xs leading-6 text-g-800"
-            >{{ selectedLog.content || '-' }}</pre
-          >
-        </div>
       </div>
     </ElDialog>
   </div>
@@ -166,6 +159,7 @@
   import { useTableColumns } from '@/hooks/core/useTableColumns'
   import { formatBillingAmount, formatLogQuota } from '@/utils/quota'
   import { formatTokenMetric } from '@/utils/number'
+  import { getDisplayPricingTiers } from '@/views/model-square/model-square'
   import { useI18n } from 'vue-i18n'
 
   defineOptions({ name: 'UsageLogs' })
@@ -186,6 +180,7 @@
   interface UsageLogMetadata {
     billing_mode?: string
     matched_tier?: string
+    expr_b64?: string
     model_price?: number
     model_ratio?: number
     completion_ratio?: number
@@ -509,6 +504,22 @@
   }
 
   /**
+   * 将日志中的 Base64 计费表达式解码为 UTF-8 文本
+   * @param encodedExpression Base64 编码的计费表达式
+   * @returns 解码后的表达式；无效数据返回空文本
+   */
+  const decodeBillingExpression = (encodedExpression?: string): string => {
+    if (!encodedExpression) return ''
+    try {
+      const binary = atob(encodedExpression)
+      const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0))
+      return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+    } catch {
+      return ''
+    }
+  }
+
+  /**
    * 将倍率格式化为官方计费详情使用的四位小数
    * @param ratio 计费倍率
    * @returns 带 x 后缀的倍率文本
@@ -602,6 +613,25 @@
         details.push({
           label: t('usageLogs.details.billing.matchedTier'),
           value: metadata.matched_tier
+        })
+      }
+      const expression = decodeBillingExpression(metadata.expr_b64)
+      const matchedTier = metadata.matched_tier
+        ? getDisplayPricingTiers(
+            { billing_mode: metadata.billing_mode, billing_expr: expression },
+            metadata.matched_tier
+          )[0]
+        : undefined
+      if (matchedTier?.input != null && Number.isFinite(matchedTier.input)) {
+        details.push({
+          label: t('usageLogs.details.billing.inputPrice'),
+          value: `${formatBillingAmount(matchedTier.input, systemStatus.value)}/M`
+        })
+      }
+      if (matchedTier?.output != null && Number.isFinite(matchedTier.output)) {
+        details.push({
+          label: t('usageLogs.details.billing.outputPrice'),
+          value: `${formatBillingAmount(matchedTier.output, systemStatus.value)}/M`
         })
       }
     } else if (isPerCall) {

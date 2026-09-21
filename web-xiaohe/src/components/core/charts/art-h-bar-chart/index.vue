@@ -127,25 +127,24 @@
     getGridWithLegend
   } = useChartComponent({
     props,
+    /** 检查横向柱状系列是否缺少数据项；零值仍交给图表渲染。@returns 是否为空数据 */
     checkEmpty: () => {
       // 检查单数据情况
       if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
         const singleData = props.data as number[]
-        return !singleData.length || singleData.every((val) => val === 0)
+        return !singleData.length
       }
 
       // 检查多数据情况
       if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
         const multiData = props.data as BarDataItem[]
-        return (
-          !multiData.length ||
-          multiData.every((item) => !item.data?.length || item.data.every((val) => val === 0))
-        )
+        return !multiData.length || multiData.every((item) => !item.data?.length)
       }
 
       return true
     },
     watchSources: [() => props.data, () => props.xAxisData, () => props.colors],
+    /** 生成横向柱状图及可选图例配置。@returns ECharts 横向柱状图配置 */
     generateOptions: (): EChartsOption => {
       const options: EChartsOption = {
         grid: getGridWithLegend(props.showLegend && isMultipleData.value, props.legendPosition, {
@@ -153,7 +152,7 @@
           right: 0,
           left: 0
         }),
-        tooltip: props.showTooltip ? getTooltipStyle() : undefined,
+        tooltip: props.showTooltip ? getTooltipStyle(props.stack ? 'item' : 'axis') : undefined,
         xAxis: {
           type: 'value',
           axisTick: getAxisTickStyle(),
@@ -172,7 +171,7 @@
 
       // 添加图例配置
       if (props.showLegend && isMultipleData.value) {
-        options.legend = getLegendStyle(props.legendPosition)
+        options.legend = getLegendStyle(props.legendPosition, { type: 'scroll' })
       }
 
       // 生成系列数据

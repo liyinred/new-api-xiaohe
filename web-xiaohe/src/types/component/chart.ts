@@ -125,6 +125,8 @@ export interface BarChartProps extends BaseChartProps, AxisDisplayProps, Interac
   borderRadius?: number | number[]
   /** 提示值的数值前缀 */
   valuePrefix?: string
+  /** 坐标轴与提示值的最大小数位 */
+  valuePrecision?: number
 }
 
 // 折线图数据项接口
@@ -158,6 +160,8 @@ export interface LineDataItem {
 export interface LineChartProps extends BaseChartProps, AxisDisplayProps, InteractionProps {
   /** 图表数据 - 支持单组数据或多组数据 */
   data: number[] | LineDataItem[]
+  /** 是否堆叠多组折线及面积 */
+  stack?: boolean
   /** X轴标签数据 */
   xAxisData?: string[]
   /** 线条宽度 */
@@ -174,6 +178,8 @@ export interface LineChartProps extends BaseChartProps, AxisDisplayProps, Intera
   animationDelay?: number
   /** 坐标轴与提示值的数值前缀 */
   valuePrefix?: string
+  /** 坐标轴与提示值的最大小数位 */
+  valuePrecision?: number
 }
 
 // 雷达图数据项接口

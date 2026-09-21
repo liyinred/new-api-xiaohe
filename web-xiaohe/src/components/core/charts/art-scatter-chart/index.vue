@@ -51,9 +51,8 @@
     getTooltipStyle
   } = useChartComponent({
     props,
-    checkEmpty: () => {
-      return !props.data?.length || props.data.every((item) => item.value.every((val) => val === 0))
-    },
+    /** 检查是否缺少散点；零坐标仍交给图表渲染。@returns 是否为空数据 */
+    checkEmpty: () => !props.data?.length,
     watchSources: [() => props.data, () => props.colors, () => props.symbolSize],
     generateOptions: (): EChartsOption => {
       const computedColor = props.colors[0] || getCssVar('--el-color-primary')

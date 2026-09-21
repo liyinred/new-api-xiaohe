@@ -51,14 +51,8 @@
     getTooltipStyle
   } = useChartComponent({
     props,
-    checkEmpty: () => {
-      return (
-        !props.data?.length ||
-        props.data.every(
-          (item) => item.open === 0 && item.close === 0 && item.high === 0 && item.low === 0
-        )
-      )
-    },
+    /** 检查是否缺少 K 线数据项；零值仍交给图表渲染。@returns 是否为空数据 */
+    checkEmpty: () => !props.data?.length,
     watchSources: [
       () => props.data,
       () => props.colors,

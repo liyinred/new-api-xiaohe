@@ -8,6 +8,7 @@
   import { getCssVar } from '@/utils/ui'
   import { graphic, type EChartsOption } from '@/plugins/echarts'
   import type { BarChartProps, BarDataItem } from '@/types/component/chart'
+  import { formatChartValue } from '@/utils/number'
 
   defineOptions({ name: 'ArtBarChart' })
 
@@ -45,13 +46,6 @@
       'name' in props.data[0]
     )
   })
-
-  /**
-   * 为图表数值添加配置的前缀
-   * @param value 图表数值
-   * @returns 带前缀的数值文本
-   */
-  const formatChartValue = (value: number): string => `${props.valuePrefix || ''}${value}`
 
   // 获取颜色配置
   const getColor = (customColor?: string, index?: number) => {
@@ -130,25 +124,24 @@
     getGridWithLegend
   } = useChartComponent({
     props,
+    /** 检查柱状系列是否缺少数据项；零值仍交给图表渲染。@returns 是否为空数据 */
     checkEmpty: () => {
       // 检查单数据情况
       if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
         const singleData = props.data as number[]
-        return !singleData.length || singleData.every((val) => val === 0)
+        return !singleData.length
       }
 
       // 检查多数据情况
       if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
         const multiData = props.data as BarDataItem[]
-        return (
-          !multiData.length ||
-          multiData.every((item) => !item.data?.length || item.data.every((val) => val === 0))
-        )
+        return !multiData.length || multiData.every((item) => !item.data?.length)
       }
 
       return true
     },
     watchSources: [() => props.data, () => props.xAxisData, () => props.colors],
+    /** 生成柱状图配置。@returns ECharts 柱状图配置 */
     generateOptions: (): EChartsOption => {
       const options: EChartsOption = {
         grid: getGridWithLegend(props.showLegend && isMultipleData.value, props.legendPosition, {
@@ -159,9 +152,11 @@
         tooltip: props.showTooltip
           ? {
               ...getTooltipStyle(),
-              valueFormatter: props.valuePrefix
-                ? (value: unknown) => formatChartValue(Number(value))
-                : undefined
+              valueFormatter:
+                props.valuePrefix || props.valuePrecision !== undefined
+                  ? (value: unknown) =>
+                      formatChartValue(Number(value), props.valuePrefix, props.valuePrecision)
+                  : undefined
             }
           : undefined,
         xAxis: {
@@ -173,7 +168,14 @@
         },
         yAxis: {
           type: 'value',
-          axisLabel: getAxisLabelStyle(props.showAxisLabel),
+          axisLabel: {
+            ...getAxisLabelStyle(props.showAxisLabel),
+            formatter:
+              props.valuePrecision !== undefined
+                ? (value: number) =>
+                    formatChartValue(value, props.valuePrefix, props.valuePrecision)
+                : undefined
+          },
           axisLine: getAxisLineStyle(props.showAxisLine),
           splitLine: getSplitLineStyle(props.showSplitLine)
         }
