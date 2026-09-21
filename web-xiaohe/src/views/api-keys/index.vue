@@ -149,11 +149,11 @@
     type ApiToken,
     type TokenFormData
   } from '@/api/token'
-  import { fetchSystemStatus } from '@/api/auth'
+  import { fetchSystemStatus, type SystemStatus } from '@/api/auth'
   import { useTableColumns } from '@/hooks/core/useTableColumns'
   import {
     DEFAULT_QUOTA_PER_UNIT,
-    formatQuotaUsd,
+    formatQuota as formatDisplayQuota,
     quotaToUsd,
     resolveQuotaPerUnit,
     usdToQuota
@@ -185,6 +185,7 @@
   const expirationDate = ref<Date>()
   const formRef = ref<FormInstance>()
   const quotaPerUnit = ref(DEFAULT_QUOTA_PER_UNIT)
+  const systemStatus = ref<SystemStatus>()
   const pagination = reactive({ current: 1, size: 10, total: 0 })
   /**
    * 构建 API 密钥筛选项
@@ -281,12 +282,13 @@
   }
 
   /**
-   * 初始化美元换算配置与 API 密钥列表
+   * 初始化额度展示配置与 API 密钥列表
    * @returns 无返回值
    */
   const initializePage = async (): Promise<void> => {
     const status = await fetchSystemStatus()
     quotaPerUnit.value = resolveQuotaPerUnit(status.quota_per_unit)
+    systemStatus.value = status
     await loadTokens()
   }
 
@@ -457,7 +459,7 @@
   const formatQuota = (token: ApiToken): string =>
     token.unlimited_quota
       ? t('apiKeys.unlimited')
-      : `${formatQuotaUsd(token.remain_quota, quotaPerUnit.value)} / ${formatQuotaUsd(token.used_quota, quotaPerUnit.value)}`
+      : `${formatDisplayQuota(token.remain_quota, systemStatus.value)} / ${formatDisplayQuota(token.used_quota, systemStatus.value)}`
 
   /**
    * 格式化秒级时间戳

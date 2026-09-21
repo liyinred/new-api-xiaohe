@@ -69,7 +69,7 @@
           :x-axis-data="chartLabels"
           height="18rem"
           :loading="loading"
-          value-prefix="$"
+          :value-prefix="getQuotaDisplayPrefix(systemStatus)"
           show-area-color
         />
       </ElCard>
@@ -108,10 +108,9 @@
   import { fetchGetUserInfo, fetchSystemStatus, type SystemStatus } from '@/api/auth'
   import { useUserStore } from '@/store/modules/user'
   import {
-    DEFAULT_QUOTA_PER_UNIT,
-    formatQuotaUsd,
-    quotaToUsd,
-    resolveQuotaPerUnit
+    formatQuota as formatDisplayQuota,
+    getQuotaDisplayPrefix,
+    quotaToDisplayAmount
   } from '@/utils/quota'
   import { copyToClipboard } from '@/utils/clipboard'
   import { ElMessage } from 'element-plus'
@@ -140,7 +139,7 @@
   const userStore = useUserStore()
   const loading = ref(false)
   const usageData = ref<QuotaDataItem[]>([])
-  const quotaPerUnit = ref(DEFAULT_QUOTA_PER_UNIT)
+  const systemStatus = ref<SystemStatus>()
   const apiEndpoint = ref(resolveApiEndpoint())
   const overview = computed(() => ({
     quota: Number(userStore.info.quota || 0),
@@ -149,11 +148,11 @@
     group: userStore.info.group || ''
   }))
   /**
-   * 将最近用量数据转换为美元趋势数值
-   * @returns 美元用量数组
+   * 将最近用量数据转换为管理员设置的展示数值
+   * @returns 展示数值数组
    */
   const chartData = computed(() =>
-    usageData.value.map((item) => quotaToUsd(Number(item.quota || 0), quotaPerUnit.value))
+    usageData.value.map((item) => quotaToDisplayAmount(Number(item.quota || 0), systemStatus.value))
   )
   const chartLabels = computed(() =>
     usageData.value.map((item) => formatUsageTime(item.created_at))
@@ -170,11 +169,11 @@
     )
 
   /**
-   * 将内部 quota 格式化为美元
+   * 按管理员设置格式化内部 quota
    * @param quota 内部 quota 数值
-   * @returns 带 $ 符号的美元文本
+   * @returns 展示额度文本
    */
-  const formatQuota = (quota: number): string => formatQuotaUsd(quota, quotaPerUnit.value)
+  const formatQuota = (quota: number): string => formatDisplayQuota(quota, systemStatus.value)
 
   /**
    * 加载用户信息及最近二十四小时用量
@@ -196,7 +195,7 @@
       ])
       userStore.setUserInfo(userInfo)
       usageData.value = quotaData
-      quotaPerUnit.value = resolveQuotaPerUnit(status.quota_per_unit)
+      systemStatus.value = status
       apiEndpoint.value = resolveApiEndpoint(status)
     } finally {
       loading.value = false

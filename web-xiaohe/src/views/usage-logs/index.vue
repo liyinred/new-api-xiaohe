@@ -162,14 +162,9 @@
     type UsageLogQuery,
     type UsageLogStats
   } from '@/api/usage-log'
-  import { fetchSystemStatus } from '@/api/auth'
+  import { fetchSystemStatus, type SystemStatus } from '@/api/auth'
   import { useTableColumns } from '@/hooks/core/useTableColumns'
-  import {
-    DEFAULT_QUOTA_PER_UNIT,
-    formatBillingUsd,
-    formatLogQuotaUsd,
-    resolveQuotaPerUnit
-  } from '@/utils/quota'
+  import { formatBillingAmount, formatLogQuota } from '@/utils/quota'
   import { formatTokenMetric } from '@/utils/number'
   import { useI18n } from 'vue-i18n'
 
@@ -215,7 +210,7 @@
   const showSearchBar = ref(true)
   const detailsVisible = ref(false)
   const selectedLog = ref<UsageLog>()
-  const quotaPerUnit = ref(DEFAULT_QUOTA_PER_UNIT)
+  const systemStatus = ref<SystemStatus>()
   const pagination = reactive({ current: 1, size: 20, total: 0 })
 
   /**
@@ -381,12 +376,12 @@
   }
 
   /**
-   * 初始化美元换算配置与使用日志
+   * 初始化管理员货币展示配置与使用日志
    * @returns 无返回值
    */
   const initializePage = async (): Promise<void> => {
     const status = await fetchSystemStatus()
-    quotaPerUnit.value = resolveQuotaPerUnit(status.quota_per_unit)
+    systemStatus.value = status
     await loadUsageData()
   }
 
@@ -483,11 +478,11 @@
   const formatNumber = (value: number): string => new Intl.NumberFormat().format(value || 0)
 
   /**
-   * 将日志 quota 格式化为高精度美元
+   * 按管理员设置格式化高精度日志 quota
    * @param quota 内部 quota 数值
-   * @returns 带 $ 符号的美元文本
+   * @returns 高精度展示额度文本
    */
-  const formatQuota = (quota: number): string => formatLogQuotaUsd(quota, quotaPerUnit.value)
+  const formatQuota = (quota: number): string => formatLogQuota(quota, systemStatus.value)
 
   /**
    * 格式化请求耗时
@@ -521,9 +516,9 @@
   const formatRatio = (ratio: number): string => `${ratio.toFixed(4)}x`
 
   /**
-   * 将额度审计字段格式化为美元文本
+   * 将额度审计字段格式化为管理员设置的展示文本
    * @param value 额度审计字段值
-   * @returns 美元文本或原始字符串，缺失时返回未记录文案
+   * @returns 展示文本或原始字符串，缺失时返回未记录文案
    */
   const formatQuotaAuditValue = (value: unknown): string => {
     if (typeof value === 'number' && Number.isFinite(value)) return formatQuota(value)
@@ -617,7 +612,7 @@
         },
         {
           label: t('usageLogs.details.billing.modelPrice'),
-          value: formatBillingUsd(metadata.model_price as number)
+          value: formatBillingAmount(metadata.model_price as number, systemStatus.value)
         }
       )
     } else {
@@ -629,12 +624,12 @@
         const inputPrice = metadata.model_ratio * 2
         details.push({
           label: t('usageLogs.details.billing.inputPrice'),
-          value: `${formatBillingUsd(inputPrice)}/M`
+          value: `${formatBillingAmount(inputPrice, systemStatus.value)}/M`
         })
         if (metadata.completion_ratio != null && Number.isFinite(metadata.completion_ratio)) {
           details.push({
             label: t('usageLogs.details.billing.outputPrice'),
-            value: `${formatBillingUsd(inputPrice * metadata.completion_ratio)}/M`
+            value: `${formatBillingAmount(inputPrice * metadata.completion_ratio, systemStatus.value)}/M`
           })
         }
       }

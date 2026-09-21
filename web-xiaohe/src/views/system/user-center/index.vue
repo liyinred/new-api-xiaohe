@@ -353,11 +353,11 @@
     type UserProfile,
     type UserSettings
   } from '@/api/profile'
-  import { fetchSystemStatus, transformAuthUser } from '@/api/auth'
+  import { fetchSystemStatus, transformAuthUser, type SystemStatus } from '@/api/auth'
   import { useUserStore } from '@/store/modules/user'
   import {
     DEFAULT_QUOTA_PER_UNIT,
-    formatQuotaUsd,
+    formatQuota as formatDisplayQuota,
     quotaToUsd,
     resolveQuotaPerUnit,
     usdToQuota
@@ -407,6 +407,7 @@
   const passwordFormRef = ref<FormInstance>()
   const emailBindingFormRef = ref<FormInstance>()
   const quotaPerUnit = ref(DEFAULT_QUOTA_PER_UNIT)
+  const systemStatus = ref<SystemStatus>()
   const profileForm = reactive<ProfileForm>({ displayName: '' })
   const emailForm = reactive<EmailForm>({
     notificationEmail: '',
@@ -567,6 +568,7 @@
     try {
       const [result, status] = await Promise.all([fetchUserProfile(), fetchSystemStatus()])
       quotaPerUnit.value = resolveQuotaPerUnit(status.quota_per_unit)
+      systemStatus.value = status
       profile.value = result
       syncForms(result)
       userStore.setUserInfo(transformAuthUser(result))
@@ -757,11 +759,11 @@
   const formatNumber = (value?: number): string => new Intl.NumberFormat().format(value || 0)
 
   /**
-   * 将内部 quota 格式化为美元
+   * 按管理员设置格式化内部 quota
    * @param quota 内部 quota 数值
-   * @returns 带 $ 符号的美元文本
+   * @returns 展示额度文本
    */
-  const formatQuota = (quota?: number): string => formatQuotaUsd(quota || 0, quotaPerUnit.value)
+  const formatQuota = (quota?: number): string => formatDisplayQuota(quota || 0, systemStatus.value)
 
   onMounted(loadProfile)
 </script>

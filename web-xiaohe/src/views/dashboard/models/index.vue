@@ -47,19 +47,19 @@
       <ElEmpty v-if="!loading && !hasData" :description="t('dashboard.modelAnalytics.noData')" />
       <ArtBarChart
         v-else-if="quotaChartMode === 'bar'"
-        :data="chartData.quotaByTime"
+        :data="displayChartData.quotaByTime"
         :x-axis-data="chartData.timeLabels"
         height="20rem"
         :loading="loading"
-        value-prefix="$"
+        :value-prefix="getQuotaDisplayPrefix(systemStatus)"
       />
       <ArtLineChart
         v-else
-        :data="chartData.quotaAreaSeries"
+        :data="displayChartData.quotaAreaSeries"
         :x-axis-data="chartData.timeLabels"
         height="20rem"
         :loading="loading"
-        value-prefix="$"
+        :value-prefix="getQuotaDisplayPrefix(systemStatus)"
         show-area-color
       />
     </ElCard>
@@ -162,11 +162,16 @@
 </template>
 
 <script setup lang="ts">
-  import { fetchSystemStatus } from '@/api/auth'
+  import { fetchSystemStatus, type SystemStatus } from '@/api/auth'
   import { fetchUserQuotaData, type QuotaDataItem } from '@/api/dashboard'
   import { useUserStore } from '@/store/modules/user'
   import { formatTokenMetric } from '@/utils/number'
-  import { formatQuotaUsd, resolveQuotaPerUnit } from '@/utils/quota'
+  import {
+    formatQuota,
+    getQuotaDisplayPrefix,
+    quotaToDisplayAmount,
+    resolveQuotaPerUnit
+  } from '@/utils/quota'
   import { ElMessage } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   import {
@@ -185,7 +190,7 @@
   const loading = ref(false)
   const filterDialogVisible = ref(false)
   const quotaData = ref<QuotaDataItem[]>([])
-  const quotaPerUnit = ref(500000)
+  const systemStatus = ref<SystemStatus>()
   const filters = ref<AnalyticsFilters>(createRecentFilters(1))
   const draftRange = ref<[Date, Date]>([
     new Date(filters.value.startTimestamp * 1000),
@@ -211,13 +216,30 @@
       quotaData.value,
       filters.value.granularity,
       locale.value,
-      quotaPerUnit.value
+      resolveQuotaPerUnit(systemStatus.value?.quota_per_unit)
     )
   )
   const hasData = computed(() => quotaData.value.length > 0)
-  const totalQuotaLabel = computed(() =>
-    formatQuotaUsd(summary.value.totalQuota, quotaPerUnit.value)
-  )
+  const totalQuotaLabel = computed(() => formatQuota(summary.value.totalQuota, systemStatus.value))
+  /**
+   * 将图表的美元额度转换为管理员设置的展示单位
+   * @returns 额度柱状图与面积图数据
+   */
+  const displayChartData = computed(() => {
+    const quotaByTime = chartData.value.quotaByTime.map((amount) =>
+      quotaToDisplayAmount(
+        amount * resolveQuotaPerUnit(systemStatus.value?.quota_per_unit),
+        systemStatus.value
+      )
+    )
+    return {
+      quotaByTime,
+      quotaAreaSeries: chartData.value.quotaAreaSeries.map((series) => ({
+        ...series,
+        data: quotaByTime
+      }))
+    }
+  })
   const currentRangeLabel = computed(() => {
     const formatter = new Intl.DateTimeFormat(locale.value, {
       year: 'numeric',
@@ -285,7 +307,7 @@
         fetchSystemStatus()
       ])
       quotaData.value = data
-      quotaPerUnit.value = resolveQuotaPerUnit(status.quota_per_unit)
+      systemStatus.value = status
     } catch {
       quotaData.value = []
       ElMessage.error(t('dashboard.modelAnalytics.loadFailed'))

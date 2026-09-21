@@ -127,3 +127,5 @@ volumes:
 networks:
   new-api-network:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-new-api

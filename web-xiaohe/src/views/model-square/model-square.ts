@@ -1,5 +1,6 @@
 import type { PricingModel } from '@/api/model-square'
 import type { SystemStatus } from '@/api/auth'
+import { formatBillingAmount } from '@/utils/quota'
 
 export type TokenUnit = 'M' | 'K'
 export type SortOption = 'name' | 'price-low' | 'price-high'
@@ -21,6 +22,204 @@ export interface PriceOptions {
   group: string
   showRechargePrice: boolean
   status?: SystemStatus
+  tierIndex?: number
+  now?: Date
+}
+
+export interface DisplayPricingTier {
+  label: string
+  condition?: string
+  input?: number
+  output?: number
+  cache?: number
+  'create-cache'?: number
+  image?: number
+  imageCache?: number
+  imageOutput?: number
+  audioInput?: number
+  audioOutput?: number
+  cacheCreate1h?: number
+  fixed?: number
+}
+
+/**
+ * 判断模型是否使用表达式定价，避免回退到无关的默认倍率
+ * @param model 模型定价信息
+ * @returns 是否存在表达式计费
+ */
+export function hasExpressionPricing(model: PricingModel): boolean {
+  return (
+    model.billing_mode === 'tiered_expr' ||
+    Boolean(
+      model.billing_plugin_variants?.some((variant) => variant.billing_mode === 'tiered_expr')
+    )
+  )
+}
+
+/**
+ * 解析可安全展示的线性分档价格，不解释任意计费表达式
+ * @param model 模型定价信息
+ * @returns 顺序分档价格；复杂表达式返回空数组
+ */
+export function getDisplayPricingTiers(model: PricingModel): DisplayPricingTier[] {
+  if (!hasExpressionPricing(model) || model.billing_plugin_variants?.length) return []
+  const expression = (model.billing_expr || '').trim().replace(/^v1:/, '').trim()
+  const tiers: DisplayPricingTier[] = []
+  const tierPattern =
+    /tier\(\s*(['"])([^'"]+)\1\s*,\s*(fixed\(\s*(?:\d+(?:\.\d+)?|\.\d+)\s*\)|[^()]*)\)/g
+  const structure = expression.replace(tierPattern, (_, __, label: string, body: string) => {
+    const tier: DisplayPricingTier = { label }
+    const fixed = body.match(/^fixed\(\s*((?:\d+(?:\.\d+)?|\.\d+))\s*\)$/)
+    if (fixed) {
+      tier.fixed = Number(fixed[1])
+    } else {
+      const fields: Record<string, keyof DisplayPricingTier> = {
+        p: 'input',
+        c: 'output',
+        cr: 'cache',
+        cc: 'create-cache',
+        img: 'image',
+        img_cr: 'imageCache',
+        img_o: 'imageOutput',
+        ai: 'audioInput',
+        ao: 'audioOutput',
+        cc1h: 'cacheCreate1h'
+      }
+      for (const term of body.split('+')) {
+        const match = term.trim().match(/^([a-z_]+)\s*\*\s*((?:\d+(?:\.\d+)?|\.\d+))$/)
+        if (!match || !fields[match[1]]) return 'INVALID'
+        const field = fields[match[1]] as Exclude<keyof DisplayPricingTier, 'label' | 'condition'>
+        if (tier[field] !== undefined) return 'INVALID'
+        tier[field] = Number(match[2])
+      }
+    }
+    tiers.push(tier)
+    return 'T'
+  })
+  if (tiers.length && /^(?:len\s*(?:<=?|>=?)\s*\d+\s*\?\s*T\s*:\s*)*T$/.test(structure)) {
+    const branch = structure.match(/^([^?]+)\?\s*T\s*:\s*T$/)
+    if (branch) tiers[0].condition = branch[1].trim()
+    return tiers
+  }
+  const branch = structure.match(/^([^?]+)\?\s*T\s*:\s*T$/)
+  if (!branch || tiers.length !== 2) return []
+  tiers[0].condition = branch[1].trim()
+  return tiers
+}
+
+/**
+ * 计算计费时间条件在指定时刻是否成立
+ * @param condition 仅包含时间函数、比较及布尔运算的条件表达式
+ * @param now 用于计算当前档位的时刻
+ * @returns 条件结果；表达式不受支持或时区无效时返回 null
+ */
+export function evaluateTimePricingCondition(condition: string, now: Date): boolean | null {
+  const formatterCache = new Map<string, Record<string, number>>()
+
+  /**
+   * 获取指定时区的时间字段值
+   * @param field 时间字段名称
+   * @param timezone IANA 时区名称
+   * @returns 时间字段值；时区无效时返回 null
+   */
+  const readTimeValue = (field: string, timezone: string): number | null => {
+    let values = formatterCache.get(timezone)
+    if (!values) {
+      try {
+        const parts = new Intl.DateTimeFormat('en-US', {
+          timeZone: timezone,
+          weekday: 'short',
+          month: 'numeric',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hourCycle: 'h23'
+        }).formatToParts(now)
+        const partValue = (type: Intl.DateTimeFormatPartTypes): number =>
+          Number(parts.find((part) => part.type === type)?.value)
+        const weekday = parts.find((part) => part.type === 'weekday')?.value || ''
+        values = {
+          weekday: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(weekday),
+          month: partValue('month'),
+          day: partValue('day'),
+          hour: partValue('hour'),
+          minute: partValue('minute')
+        }
+        formatterCache.set(timezone, values)
+      } catch {
+        return null
+      }
+    }
+    const value = values[field]
+    return Number.isFinite(value) && value >= 0 ? value : null
+  }
+
+  let invalid = false
+  const comparison =
+    /(weekday|month|day|hour|minute)\(\s*(['"])([^'"]+)\2\s*\)\s*(>=|<=|>|<)\s*(\d+)/g
+  let resolved = condition.replace(
+    comparison,
+    (_, field: string, __, timezone: string, operator: string, expectedText: string) => {
+      const value = readTimeValue(field, timezone)
+      if (value === null) {
+        invalid = true
+        return 'false'
+      }
+      const expected = Number(expectedText)
+      const matches =
+        operator === '>='
+          ? value >= expected
+          : operator === '<='
+            ? value <= expected
+            : operator === '>'
+              ? value > expected
+              : value < expected
+      return String(matches)
+    }
+  )
+  if (invalid || resolved.replace(/true|false|&&|\|\||[()\s]/g, '')) return null
+
+  /**
+   * 计算不包含括号的布尔表达式
+   * @param expression 仅包含 true、false、&& 和 || 的表达式
+   * @returns 布尔结果；格式无效时返回 null
+   */
+  const evaluateFlatExpression = (expression: string): boolean | null => {
+    const groups = expression.split('||')
+    if (groups.some((group) => group.trim() === '')) return null
+    let hasValidGroup = false
+    for (const group of groups) {
+      const values = group.split('&&').map((value) => value.trim())
+      if (values.some((value) => value !== 'true' && value !== 'false')) return null
+      hasValidGroup ||= values.every((value) => value === 'true')
+    }
+    return hasValidGroup
+  }
+
+  while (resolved.includes('(')) {
+    const next = resolved.replace(/\(([^()]*)\)/g, (_, inner: string) => {
+      const result = evaluateFlatExpression(inner)
+      if (result === null) invalid = true
+      return String(result ?? false)
+    })
+    if (invalid || next === resolved) return null
+    resolved = next
+  }
+  return evaluateFlatExpression(resolved)
+}
+
+/**
+ * 获取模型在指定时刻生效的价格档位序号
+ * @param model 模型定价信息
+ * @param now 用于计算当前档位的时刻
+ * @returns 当前档位序号；模型不包含可识别的时间分档时返回 undefined
+ */
+export function getCurrentPricingTierIndex(model: PricingModel, now?: Date): number | undefined {
+  if (!now) return undefined
+  const tiers = getDisplayPricingTiers(model)
+  if (tiers.length !== 2 || !tiers[0].condition) return undefined
+  const matched = evaluateTimePricingCondition(tiers[0].condition, now)
+  return matched === null ? undefined : matched ? 0 : 1
 }
 
 /**
@@ -64,10 +263,25 @@ export function getDisplayGroupRatio(model: PricingModel, selectedGroup: string)
  * @param model 模型定价信息
  * @param type 价格类型
  * @param group 当前筛选分组
+ * @param tierIndex 表达式价格分档序号，未指定时取各档较低价格
  * @returns 美元价格，缺少倍率时返回 NaN
  */
-export function calculateModelPrice(model: PricingModel, type: PriceType, group: string): number {
+export function calculateModelPrice(
+  model: PricingModel,
+  type: PriceType,
+  group: string,
+  tierIndex?: number
+): number {
   const groupRatio = getDisplayGroupRatio(model, group)
+  if (hasExpressionPricing(model)) {
+    const tiers = getDisplayPricingTiers(model)
+    const amounts = (tierIndex === undefined ? tiers : tiers.slice(tierIndex, tierIndex + 1))
+      .map((tier) =>
+        tier.fixed !== undefined ? (type === 'input' ? tier.fixed : undefined) : tier[type]
+      )
+      .filter((amount): amount is number => amount !== undefined)
+    return amounts.length ? Math.min(...amounts) * groupRatio : Number.NaN
+  }
   if (model.quota_type === 1) return (model.model_price || 0) * groupRatio
 
   const inputPrice = model.model_ratio * 2 * groupRatio
@@ -96,26 +310,11 @@ export function formatBillingPrice(
 ): string {
   if (!Number.isFinite(amountUsd)) return '-'
 
-  const usdExchangeRate = Math.max(status?.usd_exchange_rate || 1, 0.001)
+  const usdExchangeRate = Math.max(status?.usd_exchange_rate ?? status?.price ?? 1, 0.001)
   const priceRate = Math.max(status?.price || 1, 0.001)
   const rechargeAdjusted = showRechargePrice ? (amountUsd * priceRate) / usdExchangeRate : amountUsd
 
-  let symbol = '$'
-  let displayAmount = rechargeAdjusted
-  if (status?.quota_display_type === 'CNY') {
-    symbol = '¥'
-    displayAmount *= usdExchangeRate
-  } else if (status?.quota_display_type === 'CUSTOM') {
-    symbol = status.custom_currency_symbol?.trim() || '$'
-    displayAmount *= Math.max(status.custom_currency_exchange_rate || 1, 0.001)
-  }
-
-  const maximumFractionDigits = Math.abs(displayAmount) >= 1 ? 4 : 6
-  const formatted = new Intl.NumberFormat(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits
-  }).format(displayAmount)
-  return `${symbol}${formatted}`
+  return formatBillingAmount(rechargeAdjusted, status)
 }
 
 /**
@@ -130,8 +329,12 @@ export function formatModelPrice(
   type: PriceType,
   options: PriceOptions
 ): string {
-  let price = calculateModelPrice(model, type, options.group)
-  if (model.quota_type === 0 && options.tokenUnit === 'K') price /= 1000
+  const tierIndex = options.tierIndex ?? getCurrentPricingTierIndex(model, options.now)
+  let price = calculateModelPrice(model, type, options.group, tierIndex)
+  const tiers = hasExpressionPricing(model) ? getDisplayPricingTiers(model) : []
+  const tier = tiers[tierIndex ?? 0]
+  if (model.quota_type === 0 && tier?.fixed === undefined && options.tokenUnit === 'K')
+    price /= 1000
   return formatBillingPrice(price, options.status, options.showRechargePrice)
 }
 
@@ -141,7 +344,7 @@ export function formatModelPrice(
  * @returns token、request 或 task 分类
  */
 export function getQuotaType(model: PricingModel): Exclude<QuotaTypeFilter, 'all'> {
-  if (model.billing_mode === 'tiered_expr') return 'task'
+  if (Object.keys(model.billing_usage_schema || {}).length > 0) return 'task'
   return model.quota_type === 1 ? 'request' : 'token'
 }
 
@@ -180,6 +383,8 @@ export function filterAndSortModels(models: PricingModel[], filters: ModelFilter
     const direction = filters.sort === 'price-low' ? 1 : -1
     const leftPrice = calculateModelPrice(left, 'input', filters.group)
     const rightPrice = calculateModelPrice(right, 'input', filters.group)
+    if (!Number.isFinite(leftPrice)) return Number.isFinite(rightPrice) ? 1 : 0
+    if (!Number.isFinite(rightPrice)) return -1
     return (leftPrice - rightPrice) * direction
   })
 }

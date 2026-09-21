@@ -19,6 +19,7 @@ export interface PricingModel {
   tags?: string
   vendor_id?: number
   vendor_name?: string
+  vendor_icon?: string
   vendor_description?: string
   quota_type: number
   model_ratio: number
@@ -33,6 +34,8 @@ export interface PricingModel {
   supported_endpoint_types?: string[]
   billing_mode?: string
   billing_expr?: string
+  billing_plugin_variants?: Array<{ billing_mode?: string; billing_expr?: string }>
+  billing_usage_schema?: Record<string, unknown>
   group_ratio?: Record<string, number>
 }
 

@@ -124,7 +124,9 @@
             </ElTableColumn>
             <ElTableColumn :label="primaryPriceColumn" min-width="145" align="right">
               <template #default="{ row }">
-                <span class="font-mono tabular-nums">{{ formatRowPrice(row, 'input') }}</span>
+                <div>
+                  <span class="font-mono tabular-nums">{{ formatRowPrice(row, 'input') }}</span>
+                </div>
               </template>
             </ElTableColumn>
             <ElTableColumn :label="t('modelSquare.output')" min-width="145" align="right">
@@ -199,6 +201,8 @@
     collectModelTags,
     filterAndSortModels,
     formatModelPrice,
+    getDisplayPricingTiers,
+    hasExpressionPricing,
     getQuotaType,
     type ModelFilters as ModelFilterState,
     type PriceType,
@@ -220,6 +224,7 @@
   const filterDrawerVisible = ref(false)
   const detailsVisible = ref(false)
   const selectedModel = ref<PricingModel>()
+  const billingTime = useNow({ interval: 60000 })
   const filters = reactive<ModelFilterState>({
     search: '',
     vendor: 'all',
@@ -258,7 +263,8 @@
     tokenUnit: tokenUnit.value,
     group: filters.group,
     showRechargePrice: showRechargePrice.value,
-    status: status.value
+    status: status.value,
+    now: billingTime.value
   }))
   /** 表格首个价格列标题 */
   const primaryPriceColumn = computed(() =>
@@ -279,6 +285,7 @@
         return {
           ...model,
           vendor_name: vendor?.name,
+          vendor_icon: vendor?.icon,
           vendor_description: vendor?.description,
           group_ratio: pricing.group_ratio
         }
@@ -339,7 +346,9 @@
    * @returns 计费类型文案
    */
   const getBillingLabel = (model: PricingModel): string =>
-    t(`modelSquare.quotaTypes.${getQuotaType(model)}`)
+    hasExpressionPricing(model)
+      ? t('modelSquare.dynamicPrice')
+      : t(`modelSquare.quotaTypes.${getQuotaType(model)}`)
 
   /**
    * 格式化表格中的模型价格
@@ -348,7 +357,9 @@
    * @returns 格式化后的价格文本
    */
   const formatRowPrice = (model: PricingModel, type: PriceType): string =>
-    formatModelPrice(model, type, priceOptions.value)
+    hasExpressionPricing(model) && getDisplayPricingTiers(model).length === 0
+      ? t('modelSquare.dynamicPrice')
+      : formatModelPrice(model, type, priceOptions.value)
 
   onMounted(loadModelSquare)
 </script>
