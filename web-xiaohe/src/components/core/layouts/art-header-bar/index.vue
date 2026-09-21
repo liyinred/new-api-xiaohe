@@ -61,6 +61,16 @@
       </div>
 
       <div class="flex-c gap-2.5">
+        <!-- 公开主页入口 -->
+        <button
+          class="home-entry text-g-600 dark:text-g-800"
+          type="button"
+          @click="navigateToPublicHome"
+        >
+          <ArtSvgIcon icon="ri:home-5-line" class="text-xl" />
+          <span class="text-sm font-normal">{{ $t('topBar.home') }}</span>
+        </button>
+
         <!-- 搜索 -->
         <div
           v-if="shouldShowGlobalSearch"
@@ -235,6 +245,14 @@
   const { refresh } = useCommon()
 
   /**
+   * 跳转到公开主页
+   * @returns 无返回值
+   */
+  const navigateToPublicHome = (): void => {
+    router.push('/')
+  }
+
+  /**
    * 跳转到首页
    */
   const toHome = (): void => {
@@ -298,6 +316,28 @@
 
 <style lang="scss" scoped>
   /* Custom animations */
+  .home-entry {
+    display: inline-flex;
+    gap: 0.375rem;
+    align-items: center;
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: calc(var(--custom-radius) / 2 + 2px);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--art-gray-200);
+      border-color: var(--art-card-border);
+      outline: none;
+    }
+  }
+
   @keyframes rotate180 {
     0% {
       transform: rotate(0);

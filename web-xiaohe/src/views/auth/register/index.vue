@@ -21,6 +21,7 @@
             :model="formData"
             :rules="rules"
             label-position="top"
+            :validate-on-rule-change="false"
             :key="formKey"
           >
             <ElFormItem prop="username">
@@ -194,7 +195,7 @@
         required: emailVerification.value,
         type: 'email',
         message: t('register.rule.email'),
-        trigger: 'blur'
+        trigger: 'submit'
       }
     ],
     verificationCode: [

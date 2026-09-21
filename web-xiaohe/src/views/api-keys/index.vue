@@ -53,7 +53,7 @@
           ><span>{{ formatTimestamp(row.expired_time) }}</span></template
         >
         <template #created_time="{ row }"
-          ><span>{{ formatTimestamp(row.created_time) }}</span></template
+          ><span>{{ formatCreatedTime(row.created_time) }}</span></template
         >
         <template #actions="{ row }">
           <ElButton link type="primary" @click="copyToken(row)">{{ $t('apiKeys.copy') }}</ElButton>
@@ -472,6 +472,14 @@
       : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(
           timestamp * 1000
         )
+
+  /**
+   * 格式化 API 密钥创建时间
+   * @param timestamp 秒级时间戳
+   * @returns YYYY-MM-DD HH:mm 格式的本地日期时间文本
+   */
+  const formatCreatedTime = (timestamp: number): string =>
+    useDateFormat(new Date(timestamp * 1000), 'YYYY-MM-DD HH:mm').value
 
   onMounted(initializePage)
 </script>

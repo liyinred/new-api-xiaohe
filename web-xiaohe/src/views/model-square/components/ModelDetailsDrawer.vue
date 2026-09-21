@@ -1,15 +1,19 @@
 <template>
   <ElDrawer
     :model-value="modelValue"
-    :title="model?.model_name"
     size="min(48rem, 94vw)"
+    :with-header="false"
     destroy-on-close
     @update:model-value="emit('update:modelValue', $event)"
   >
     <div v-if="model" class="flex flex-col gap-5">
       <div class="flex items-start gap-3">
-        <div class="size-11 flex-cc shrink-0 rounded-custom-sm bg-g-200 text-theme">
-          <ArtSvgIcon icon="ri:sparkling-2-line" class="text-2xl" />
+        <div
+          class="size-11 flex-cc shrink-0 rounded-custom-sm bg-g-200 text-theme"
+          aria-hidden="true"
+        >
+          <img v-if="brandIcon" :src="brandIcon" alt="" class="size-7 object-contain" />
+          <ArtSvgIcon v-else icon="ri:sparkling-2-line" class="text-xl" />
         </div>
         <div class="min-w-0">
           <h2 class="break-all font-mono text-lg font-semibold text-g-900">{{
@@ -149,30 +153,14 @@
             </div>
           </div>
         </ElTabPane>
-
-        <ElTabPane :label="t('modelSquare.api')" name="api">
-          <div class="flex flex-col gap-3 pt-2">
-            <ElEmpty v-if="endpointRows.length === 0" :description="t('modelSquare.noEndpoints')" />
-            <div
-              v-for="endpoint in endpointRows"
-              :key="endpoint.type"
-              class="rounded-custom-sm border-full-d bg-g-100 p-4"
-            >
-              <div class="flex items-center gap-2">
-                <ElTag size="small" type="success">{{ endpoint.method }}</ElTag>
-                <span class="text-sm font-medium text-g-900">{{ endpoint.type }}</span>
-              </div>
-              <code class="mt-3 block break-all text-xs text-g-600">{{ endpoint.path }}</code>
-            </div>
-          </div>
-        </ElTabPane>
       </ElTabs>
     </div>
   </ElDrawer>
 </template>
 
 <script setup lang="ts">
-  import type { PricingEndpoint, PricingModel } from '@/api/model-square'
+  import type { PricingModel } from '@/api/model-square'
+  import { getModelBrandIcon } from '../model-brand-icon'
   import {
     formatModelPrice,
     getDisplayPricingTiers,
@@ -191,19 +179,11 @@
     tierIndex?: number
   }
 
-  interface EndpointRow {
-    type: string
-    method: string
-    path: string
-  }
-
   const props = defineProps<{
     /** 抽屉是否打开 */
     modelValue: boolean
     /** 当前选中的模型 */
     model?: PricingModel
-    /** 全局端点配置 */
-    endpoints: Record<string, PricingEndpoint>
     /** 当前价格展示选项 */
     priceOptions: PriceOptions
   }>()
@@ -215,6 +195,11 @@
 
   const { t, locale } = useI18n()
   const activeTab = ref('overview')
+  /**
+   * 获取当前模型的品牌图标
+   * @returns 本地 SVG 资源地址；未映射或无模型时返回空字符串
+   */
+  const brandIcon = computed(() => (props.model ? getModelBrandIcon(props.model) : ''))
   /**
    * 获取当前模型各分档的有效价格
    * @returns 分档价格列表
@@ -257,18 +242,6 @@
           group
         }))
       )
-  })
-  /** 当前模型的 API 端点行 */
-  const endpointRows = computed<EndpointRow[]>(() => {
-    if (!props.model) return []
-    return (props.model.supported_endpoint_types || []).map((type) => {
-      const endpoint = props.endpoints[type]
-      return {
-        type,
-        method: endpoint?.method || 'POST',
-        path: (endpoint?.path || '-').replaceAll('{model}', props.model?.model_name || '')
-      }
-    })
   })
   /**
    * 获取分组价格表首列标题

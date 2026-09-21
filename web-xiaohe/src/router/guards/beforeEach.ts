@@ -394,10 +394,12 @@ export function resetRouterState(delay: number): void {
 
 /**
  * 处理根路径重定向到首页
+ * @param to 目标路由
+ * @param next 路由导航回调
  * @returns true 表示已处理跳转，false 表示无需跳转
  */
 function handleRootPathRedirect(to: RouteLocationNormalized, next: NavigationGuardNext): boolean {
-  if (to.path !== '/') {
+  if (to.path !== '/' || to.name === 'PublicHome') {
     return false
   }
 

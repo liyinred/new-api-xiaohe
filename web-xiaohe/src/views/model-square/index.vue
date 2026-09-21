@@ -179,7 +179,6 @@
     <ModelDetailsDrawer
       v-model="detailsVisible"
       :model="selectedModel"
-      :endpoints="endpointMap"
       :price-options="priceOptions"
     />
   </div>
@@ -187,12 +186,7 @@
 
 <script setup lang="ts">
   import { fetchSystemStatus, type SystemStatus } from '@/api/auth'
-  import {
-    fetchModelSquare,
-    type PricingEndpoint,
-    type PricingModel,
-    type PricingVendor
-  } from '@/api/model-square'
+  import { fetchModelSquare, type PricingModel, type PricingVendor } from '@/api/model-square'
   import ModelCard from './components/ModelCard.vue'
   import ModelDetailsDrawer from './components/ModelDetailsDrawer.vue'
   import ModelFilters from './components/ModelFilters.vue'
@@ -216,7 +210,6 @@
   const loading = ref(false)
   const models = ref<PricingModel[]>([])
   const vendors = ref<PricingVendor[]>([])
-  const endpointMap = ref<Record<string, PricingEndpoint>>({})
   const status = ref<SystemStatus>()
   const tokenUnit = ref<TokenUnit>('M')
   const viewMode = ref<'card' | 'table'>('card')
@@ -291,7 +284,6 @@
         }
       })
       vendors.value = pricing.vendors
-      endpointMap.value = pricing.supported_endpoint
       status.value = systemStatus
     } finally {
       loading.value = false

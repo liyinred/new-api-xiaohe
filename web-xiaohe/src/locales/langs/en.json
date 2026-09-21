@@ -15,6 +15,7 @@
     "requestConfigError": "Request configuration error"
   },
   "topBar": {
+    "home": "Home",
     "search": {
       "title": "Search"
     },
@@ -35,6 +36,73 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "logOutTips": "Do you want to log out?"
+  },
+  "home": {
+    "pageTitle": "Home",
+    "hero": {
+      "eyebrow": "Unified AI API gateway",
+      "title": "Connect once, access leading AI models",
+      "description": "Xiaohe Hub gives teams a unified, secure and observable model access layer for API keys, quotas and usage records.",
+      "primaryAction": "Open console",
+      "secondaryAction": "Browse models",
+      "loginAction": "Sign in",
+      "registerAction": "Create account",
+      "terminalLabel": "Unified endpoint",
+      "terminalStatus": "Service available",
+      "terminalRequest": "Request any compatible model",
+      "terminalProviders": "DeepSeek · Qwen · GLM · Kimi",
+      "terminalResponse": "Route to the best available channel",
+      "terminalFootnote": "One API · Multiple models · Unified billing"
+    },
+    "stats": {
+      "providers": "Leading model providers",
+      "routes": "Compatible API routes",
+      "billing": "Transparent usage billing",
+      "visibility": "Real-time request logs"
+    },
+    "features": {
+      "eyebrow": "Capabilities",
+      "title": "Let the platform handle integration complexity",
+      "description": "From key management to usage analytics, every workflow follows the real API request lifecycle.",
+      "unified": {
+        "title": "Unified model access",
+        "description": "Reach models from different providers through a consistent API contract."
+      },
+      "secure": {
+        "title": "Secure key management",
+        "description": "Create purpose-specific keys with quotas, expiry and model scopes."
+      },
+      "observable": {
+        "title": "End-to-end visibility",
+        "description": "Review request logs, token usage, latency and cost in one place."
+      },
+      "flexible": {
+        "title": "Flexible pricing",
+        "description": "Compare group pricing and billing modes before selecting a model."
+      }
+    },
+    "workflow": {
+      "eyebrow": "Workflow",
+      "title": "Start in three steps",
+      "create": {
+        "title": "Create an API key",
+        "description": "Assign dedicated credentials and access scope to your app."
+      },
+      "connect": {
+        "title": "Connect the endpoint",
+        "description": "Keep your compatible SDK and replace only the endpoint and key."
+      },
+      "monitor": {
+        "title": "Track usage",
+        "description": "Review spend, performance and request details in the console."
+      }
+    },
+    "cta": {
+      "title": "Ready for a simpler model integration?",
+      "description": "Create an account, choose a model and send your first request with a familiar SDK.",
+      "action": "Get started"
+    },
+    "footer": "A unified, secure and clear AI model access platform"
   },
   "search": {
     "placeholder": "Search page",
@@ -510,7 +578,6 @@
     "details": "Details",
     "actions": "Actions",
     "overview": "Overview",
-    "api": "API",
     "unknownVendor": "Unknown vendor",
     "noDescription": "No model description",
     "noEndpoints": "No endpoint information",
