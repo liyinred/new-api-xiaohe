@@ -2,8 +2,11 @@ package main
 
 import (
 	"bytes"
+	"compress/gzip"
 	"embed"
+	"encoding/json"
 	"errors"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -11,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -49,6 +53,13 @@ func newHandler(upstream string) (http.Handler, error) {
 	}
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(request *httputil.ProxyRequest) {
+			// 状态接口需要完整 JSON；禁用压缩协商与条件请求，避免绕过字段过滤。
+			if request.In.URL.Path == "/api/status" {
+				request.Out.Header.Set("Accept-Encoding", "identity")
+				for _, name := range []string{"If-None-Match", "If-Modified-Since", "Range", "If-Range"} {
+					request.Out.Header.Del(name)
+				}
+			}
 			// 清除客户端伪造的 Forwarded 信息，并写入当前入口信息。
 			request.Out.Header.Del("Forwarded")
 			request.SetURL(target)
@@ -57,11 +68,15 @@ func newHandler(upstream string) (http.Handler, error) {
 			request.Out.URL.RawQuery = request.In.URL.RawQuery
 		},
 		FlushInterval: -1,
+		// 响应路径已由 SetURL 添加上游前缀，按相同前缀定位状态接口。
+		ModifyResponse: func(response *http.Response) error {
+			return sanitizeProxyResponse(response, strings.TrimRight(target.Path, "/")+"/api/status")
+		},
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
 			log.Printf("New API 代理失败: %v", err)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusBadGateway)
-			_, _ = w.Write([]byte(`{"success":false,"message":"New API 上游暂不可用"}`))
+			_, _ = w.Write([]byte(`{"success":false,"message":"上游服务暂不可用"}`))
 		},
 	}
 	mux := http.NewServeMux()
@@ -134,4 +149,95 @@ func setFrontendCacheHeaders(w http.ResponseWriter, name string) {
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	w.Header().Set("Pragma", "no-cache")
 	w.Header().Set("Expires", "0")
+}
+
+// sanitizeProxyResponse 清理代理响应标识并过滤状态数据；response 为上游响应，statusPath 为含上游前缀的状态路径，返回处理错误。
+func sanitizeProxyResponse(response *http.Response, statusPath string) error {
+	for name := range response.Header {
+		lower := strings.ToLower(name)
+		if strings.HasPrefix(lower, "x-new-api-") || strings.HasPrefix(lower, "x-oneapi-") {
+			response.Header.Del(name)
+		}
+	}
+	if response.Request.URL.Path != statusPath {
+		return nil
+	}
+	if response.StatusCode != http.StatusOK {
+		return errors.New("状态接口返回异常状态")
+	}
+	defer response.Body.Close()
+	var reader io.Reader = response.Body
+	switch strings.ToLower(strings.TrimSpace(response.Header.Get("Content-Encoding"))) {
+	case "", "identity":
+	case "gzip":
+		compressed, err := gzip.NewReader(response.Body)
+		if err != nil {
+			return err
+		}
+		defer compressed.Close()
+		reader = compressed
+	default:
+		return errors.New("状态接口返回不支持的压缩格式")
+	}
+	// 限制解压后的大小，异常响应不回退为透传。
+	const maxStatusSize = 2 << 20
+	body, err := io.ReadAll(io.LimitReader(reader, maxStatusSize+1))
+	if err != nil {
+		return err
+	}
+	if len(body) > maxStatusSize {
+		return errors.New("状态接口响应过大")
+	}
+	filtered, err := filterSystemStatus(body)
+	if err != nil {
+		return err
+	}
+	response.Body = io.NopCloser(bytes.NewReader(filtered))
+	response.ContentLength = int64(len(filtered))
+	response.Header.Set("Content-Length", strconv.Itoa(len(filtered)))
+	response.Header.Set("Content-Type", "application/json; charset=utf-8")
+	response.Header.Set("Cache-Control", "no-store")
+	for _, name := range []string{"Content-Encoding", "ETag", "Last-Modified", "Content-MD5", "Digest", "Content-Range", "Accept-Ranges", "Trailer"} {
+		response.Header.Del(name)
+	}
+	response.Trailer = nil
+	return nil
+}
+
+// filterSystemStatus 按定制前端 SystemStatus 契约过滤数据；body 为上游 JSON，返回白名单 JSON 或解析错误。
+func filterSystemStatus(body []byte) ([]byte, error) {
+	var upstream struct {
+		Success bool                       `json:"success"`
+		Data    map[string]json.RawMessage `json:"data"`
+	}
+	if err := json.Unmarshal(body, &upstream); err != nil {
+		return nil, err
+	}
+	if !upstream.Success || upstream.Data == nil {
+		return nil, errors.New("状态接口业务响应异常")
+	}
+	data := make(map[string]json.RawMessage)
+	for _, name := range []string{
+		"register_enabled", "password_register_enabled", "email_verification",
+		"server_address", "quota_per_unit", "quota_display_type", "usd_exchange_rate",
+		"custom_currency_symbol", "custom_currency_exchange_rate", "price",
+	} {
+		if value, exists := upstream.Data[name]; exists {
+			data[name] = value
+		}
+	}
+	if value, exists := upstream.Data["api_info"]; exists {
+		var endpoints []struct {
+			URL string `json:"url"`
+		}
+		if err := json.Unmarshal(value, &endpoints); err != nil {
+			return nil, err
+		}
+		encoded, err := json.Marshal(endpoints)
+		if err != nil {
+			return nil, err
+		}
+		data["api_info"] = encoded
+	}
+	return json.Marshal(map[string]any{"success": true, "message": "", "data": data})
 }

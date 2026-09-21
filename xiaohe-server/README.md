@@ -38,16 +38,12 @@ chmod +x ./xiaohe-server-linux-amd64
 
 ## 路由与部署
 
-- `GET /healthz`：本地存活检查，不检查上游。
-- `/api`、`/v1`、`/v1beta`、`/pg`、`/mj`、`/suno` 及子路径，以及 `/{mode}/mj` 路径：代理给官方 New API，支持管理 API、模型 API、上传、SSE 和 WebSocket；保留 Method、Path、Query、Body、Authorization 和 Cookie，不增加业务层重试。
-- 其余 GET/HEAD 路径：托管二进制内嵌的前端文件，页面路由回退至 `index.html`；HTML 与非哈希资源禁止缓存，`assets/` 下的内容哈希资源长期缓存；缺失静态资源返回 `404`，不回退 HTML。
-- 连接复用、连接及 TLS 超时使用 Go 默认 Transport；不设置整体读写超时，以兼容长连接。连接失败返回统一 JSON `502`，内部错误只记录在服务日志。
+- `GET /healthz`：仅检查整合服务存活。
+- `/api`、`/v1`、`/v1beta`、`/pg`、`/mj`、`/suno` 及子路径和 `/{mode}/mj`：转发上游，沿用原有鉴权，支持上传、SSE 和 WebSocket；连接失败返回 `502`。
+- 响应清理 `X-New-Api-*`、`X-Oneapi-*` 标识头，保留其他业务头。`/api/status` 仅保留注册、API 地址和额度/货币配置，移除版本、启动时间、品牌、文档、第三方登录、通行密钥、人机验证、导航、公告等信息；禁止缓存，异常返回 `502`。其他接口响应体原样转发。
+- 其余 GET/HEAD 请求使用内嵌前端：页面回退至首页，缺失静态资源返回 `404`；哈希资源长期缓存，其他资源禁止缓存。
 
-生产环境 `web-xiaohe/.env.production` 保持 `VITE_API_URL = /`。访问 `http://localhost:8082` 即可使用定制前端，页面和 API 同源。生产 Web 入口可将所有请求统一转发到 `xiaohe-server:8082`，不能再指向官方 New API。WebSocket 需配置入口的 Upgrade Header，SSE 需关闭入口响应缓冲。
-
-本服务未实现定制业务接口；后续定制 Handler 应在静态页面 fallback 前注册。
-
-官方 New API 应只对内网开放；生产环境应通过 Web 入口限制 `8082` 的公网访问。代理不新增认证或 CORS 放行规则，继续由官方接口执行原有鉴权；同源部署保证现有 Cookie 登录流程。
+生产环境保持 `VITE_API_URL = /`，Web 入口统一转发至 `xiaohe-server:8082`，上游仅对内网开放，`8082` 仅供入口访问。WebSocket 配置 Upgrade 转发，SSE 关闭响应缓冲。
 
 ## 更新最新提交并推送
 
