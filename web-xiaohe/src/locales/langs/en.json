@@ -42,7 +42,7 @@
     "hero": {
       "eyebrow": "Unified AI API gateway",
       "title": "Connect once, access leading AI models",
-      "description": "Xiaohe Hub gives teams a unified, secure and observable model access layer for API keys, quotas and usage records.",
+      "description": "小合智流 gives teams a unified, secure and observable model access layer for API keys, quotas and usage records.",
       "primaryAction": "Open console",
       "secondaryAction": "Browse models",
       "loginAction": "Sign in",
@@ -195,7 +195,7 @@
   },
   "login": {
     "leftView": {
-      "title": "小合Hub for multi-model access",
+      "title": "小合智流 for multi-model access",
       "subTitle": "Manage API keys, model quotas, and usage records in one place for simpler multi-model integration"
     },
     "title": "Welcome back",
@@ -300,6 +300,8 @@
       "endpoint": "Endpoint",
       "group": "Current user group",
       "defaultGroup": "Default group",
+      "username": "Username",
+      "email": "Account email",
       "safety": "Never expose API keys in browsers or public repositories",
       "copied": "Endpoint copied"
     },
@@ -491,7 +493,7 @@
       "notificationEmailPlaceholder": "Leave empty to use the account email",
       "notificationEmailHint": "A warning is sent here when the balance falls below the threshold.",
       "threshold": "Quota warning threshold",
-      "thresholdHint": "Send an email when the remaining quota falls below this USD amount.",
+      "thresholdHint": "Send an email when the remaining quota falls below this value. Currently displayed in {currency} format.",
       "save": "Save email settings",
       "saved": "Email settings updated"
     },

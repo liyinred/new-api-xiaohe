@@ -17,9 +17,6 @@
             @{{ profile?.username || '-' }} · {{ profile?.email || $t('profile.unboundEmail') }}
           </p>
         </div>
-        <ElButton :loading="loading" circle @click="loadProfile">
-          <ArtSvgIcon icon="ri:refresh-line" />
-        </ElButton>
       </div>
       <div class="grid grid-cols-1 border-t border-g-300 sm:grid-cols-3">
         <div class="p-5 sm:border-r sm:border-g-300">
@@ -121,12 +118,17 @@
               <ElInputNumber
                 v-model="emailForm.quotaWarningAmount"
                 class="w-full"
-                :min="0.0001"
-                :precision="4"
-                :step="0.0001"
+                :min="quotaInputStep"
+                :precision="quotaInputPrecision"
+                :step="quotaInputStep"
                 controls-position="right"
-              />
-              <p class="mt-1 text-xs text-g-500">{{ $t('profile.email.thresholdHint') }}</p>
+              >
+                <template v-if="quotaDisplayPrefix" #prefix>{{ quotaDisplayPrefix }}</template>
+                <template v-if="isTokenDisplay" #suffix>Tokens</template>
+              </ElInputNumber>
+              <p class="mt-1 text-xs text-g-500">{{
+                $t('profile.email.thresholdHint', { currency: quotaDisplayName })
+              }}</p>
             </div>
           </ElFormItem>
           <div class="flex justify-end">
@@ -355,11 +357,10 @@
   import { fetchSystemStatus, transformAuthUser, type SystemStatus } from '@/api/auth'
   import { useUserStore } from '@/store/modules/user'
   import {
-    DEFAULT_QUOTA_PER_UNIT,
+    displayAmountToQuota,
     formatQuota as formatDisplayQuota,
-    quotaToUsd,
-    resolveQuotaPerUnit,
-    usdToQuota
+    getQuotaDisplayPrefix,
+    quotaToDisplayAmount
   } from '@/utils/quota'
   import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
   import { useI18n } from 'vue-i18n'
@@ -405,7 +406,6 @@
   const emailFormRef = ref<FormInstance>()
   const passwordFormRef = ref<FormInstance>()
   const emailBindingFormRef = ref<FormInstance>()
-  const quotaPerUnit = ref(DEFAULT_QUOTA_PER_UNIT)
   const systemStatus = ref<SystemStatus>()
   const profileForm = reactive<ProfileForm>({ displayName: '' })
   const emailForm = reactive<EmailForm>({
@@ -447,6 +447,38 @@
     if (profile.value?.role === 10) return t('profile.roles.admin')
     return t('profile.roles.user')
   })
+  /**
+   * 判断额度是否按 Tokens 展示
+   * @returns 是否使用 Tokens 展示
+   */
+  const isTokenDisplay = computed(() => systemStatus.value?.quota_display_type === 'TOKENS')
+  /**
+   * 获取额度输入框使用的币种前缀
+   * @returns 当前币种符号，Tokens 模式返回空文本
+   */
+  const quotaDisplayPrefix = computed(() => getQuotaDisplayPrefix(systemStatus.value).trim())
+  /**
+   * 获取额度提示使用的展示格式名称
+   * @returns 当前货币或 Tokens 格式名称
+   */
+  const quotaDisplayName = computed(() => {
+    if (isTokenDisplay.value) return 'Tokens'
+    if (systemStatus.value?.quota_display_type === 'CNY') return 'CNY (¥)'
+    if (systemStatus.value?.quota_display_type === 'CUSTOM') {
+      return systemStatus.value.custom_currency_symbol?.trim() || '¤'
+    }
+    return 'USD ($)'
+  })
+  /**
+   * 获取额度输入框的小数精度
+   * @returns Tokens 模式为 0，货币模式为 4
+   */
+  const quotaInputPrecision = computed(() => (isTokenDisplay.value ? 0 : 4))
+  /**
+   * 获取额度输入框的最小值与步长
+   * @returns Tokens 模式为 1，货币模式为 0.0001
+   */
+  const quotaInputStep = computed(() => (isTokenDisplay.value ? 1 : 0.0001))
   /**
    * 构建用户信息表单校验规则
    * @returns 用户信息表单规则
@@ -551,9 +583,9 @@
     const nextSettings = parseUserSettings(nextProfile.setting)
     profileForm.displayName = nextProfile.display_name || nextProfile.username
     emailForm.notificationEmail = nextSettings.notification_email
-    emailForm.quotaWarningAmount = quotaToUsd(
+    emailForm.quotaWarningAmount = quotaToDisplayAmount(
       nextSettings.quota_warning_threshold,
-      quotaPerUnit.value
+      systemStatus.value
     )
     settings.value = nextSettings
   }
@@ -566,7 +598,6 @@
     loading.value = true
     try {
       const [result, status] = await Promise.all([fetchUserProfile(), fetchSystemStatus()])
-      quotaPerUnit.value = resolveQuotaPerUnit(status.quota_per_unit)
       systemStatus.value = status
       profile.value = result
       syncForms(result)
@@ -610,7 +641,10 @@
         ...settings.value,
         notify_type: 'email',
         notification_email: emailForm.notificationEmail,
-        quota_warning_threshold: usdToQuota(emailForm.quotaWarningAmount, quotaPerUnit.value)
+        quota_warning_threshold: displayAmountToQuota(
+          emailForm.quotaWarningAmount,
+          systemStatus.value
+        )
       })
       ElMessage.success(t('profile.email.saved'))
       await loadProfile()

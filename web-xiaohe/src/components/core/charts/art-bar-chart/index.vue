@@ -162,9 +162,9 @@
         xAxis: {
           type: 'category',
           data: props.xAxisData,
-          axisTick: getAxisTickStyle(),
-          axisLine: getAxisLineStyle(props.showAxisLine),
-          axisLabel: getAxisLabelStyle(props.showAxisLabel)
+          axisTick: { ...getAxisTickStyle(true), alignWithLabel: true },
+          axisLine: getAxisLineStyle(props.showAxisLine, true),
+          axisLabel: getAxisLabelStyle(props.showAxisLabel, true)
         },
         yAxis: {
           type: 'value',
@@ -176,7 +176,7 @@
                     formatChartValue(value, props.valuePrefix, props.valuePrecision)
                 : undefined
           },
-          axisLine: getAxisLineStyle(props.showAxisLine),
+          axisLine: getAxisLineStyle(false),
           splitLine: getSplitLineStyle(props.showSplitLine)
         }
       }

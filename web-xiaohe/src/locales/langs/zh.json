@@ -42,7 +42,7 @@
     "hero": {
       "eyebrow": "统一 AI API 网关",
       "title": "一次接入，灵活调用主流 AI 模型",
-      "description": "小合Hub 为团队提供统一、安全、可观测的模型接入层，让 API 密钥、调用额度和使用记录集中管理。",
+      "description": "小合智流为团队提供统一、安全、可观测的模型接入层，让 API 密钥、调用额度和使用记录集中管理。",
       "primaryAction": "进入控制台",
       "secondaryAction": "浏览模型",
       "loginAction": "登录",
@@ -186,7 +186,7 @@
   },
   "login": {
     "leftView": {
-      "title": "小合Hub：一站式多模型接入平台",
+      "title": "小合智流：一站式多模型接入平台",
       "subTitle": "统一管理 API 密钥、模型额度与调用记录，让多模型接入更简单"
     },
     "title": "欢迎回来",
@@ -291,6 +291,8 @@
       "endpoint": "接口地址",
       "group": "当前用户分组",
       "defaultGroup": "默认分组",
+      "username": "用户名",
+      "email": "账户邮箱",
       "safety": "请勿在浏览器或公开仓库中暴露 API 密钥",
       "copied": "接口地址已复制"
     },
@@ -478,7 +480,7 @@
       "notificationEmailPlaceholder": "留空则使用账户邮箱",
       "notificationEmailHint": "额度低于预警阈值时，系统会向该邮箱发送通知。",
       "threshold": "额度预警阈值",
-      "thresholdHint": "账户剩余额度低于该美元金额时触发邮件通知。",
+      "thresholdHint": "账户剩余额度低于该数值时触发邮件通知，当前按 {currency} 格式展示。",
       "save": "保存邮箱设置",
       "saved": "邮箱设置已更新"
     },

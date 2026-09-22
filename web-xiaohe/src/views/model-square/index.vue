@@ -76,9 +76,6 @@
                   <ArtSvgIcon icon="ri:list-check" />
                 </ElRadioButton>
               </ElRadioGroup>
-              <ElButton circle :aria-label="t('modelSquare.refresh')" @click="loadModelSquare">
-                <ArtSvgIcon icon="ri:refresh-line" />
-              </ElButton>
             </div>
           </div>
         </ElCard>

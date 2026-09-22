@@ -4,14 +4,11 @@
     <section class="art-card overflow-hidden">
       <div class="grid grid-cols-1 xl:grid-cols-[1fr_22rem]">
         <div class="p-5">
-          <div class="flex-cb gap-4 mb-5">
+          <div class="mb-5">
             <div>
               <h2 class="text-lg font-semibold text-g-900">{{ $t('dashboard.usage.title') }}</h2>
               <p class="mt-1 text-sm text-g-500">{{ $t('dashboard.usage.description') }}</p>
             </div>
-            <ElButton :loading="loading" circle @click="loadOverview"
-              ><ArtSvgIcon icon="ri:refresh-line"
-            /></ElButton>
           </div>
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <ArtStatsCard
@@ -90,6 +87,18 @@
             ><p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.group') }}</p
             ><p class="mt-2 text-sm font-medium text-g-800">{{
               overview.group || $t('dashboard.apiInfo.defaultGroup')
+            }}</p></div
+          >
+          <div
+            ><p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.username') }}</p
+            ><p class="mt-2 break-all text-sm font-medium text-g-800">{{
+              userStore.info.userName || '-'
+            }}</p></div
+          >
+          <div
+            ><p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.email') }}</p
+            ><p class="mt-2 break-all text-sm font-medium text-g-800">{{
+              userStore.info.email || $t('profile.unboundEmail')
             }}</p></div
           >
           <ElAlert

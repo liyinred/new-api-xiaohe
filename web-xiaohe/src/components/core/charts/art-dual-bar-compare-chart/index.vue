@@ -145,9 +145,9 @@
         xAxis: {
           type: 'category',
           data: props.xAxisData,
-          axisTick: getAxisTickStyle(),
-          axisLine: getAxisLineStyle(props.showAxisLine),
-          axisLabel: getAxisLabelStyle(props.showAxisLabel),
+          axisTick: getAxisTickStyle(true),
+          axisLine: getAxisLineStyle(props.showAxisLine, true),
+          axisLabel: getAxisLabelStyle(props.showAxisLabel, true),
           boundaryGap: true
         },
 
@@ -157,7 +157,7 @@
           min: props.yAxisMin,
           max: props.yAxisMax,
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
-          axisLine: getAxisLineStyle(props.showAxisLine),
+          axisLine: getAxisLineStyle(false),
           splitLine: getSplitLineStyle(props.showSplitLine)
         },
 

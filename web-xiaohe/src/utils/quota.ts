@@ -21,6 +21,23 @@ export function quotaToDisplayAmount(quota: number, status?: SystemStatus): numb
 }
 
 /**
+ * 将管理员设置的展示数值转换为内部 quota
+ * @param amount 当前展示币种或 Tokens 数值
+ * @param status 系统公开配置
+ * @returns 取整后的内部 quota 数量
+ */
+export function displayAmountToQuota(amount: number, status?: SystemStatus): number {
+  if (status?.quota_display_type === 'TOKENS') return Math.round(Number(amount || 0))
+  const exchangeRate =
+    status?.quota_display_type === 'CNY'
+      ? resolveExchangeRate(status.usd_exchange_rate)
+      : status?.quota_display_type === 'CUSTOM'
+        ? resolveExchangeRate(status.custom_currency_exchange_rate)
+        : 1
+  return usdToQuota(Number(amount || 0) / exchangeRate, status?.quota_per_unit)
+}
+
+/**
  * 获取图表额度数值使用的符号前缀
  * @param status 系统公开配置
  * @returns 币种符号，Tokens 模式返回空文本

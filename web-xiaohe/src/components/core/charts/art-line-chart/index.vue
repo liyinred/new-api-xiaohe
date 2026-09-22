@@ -224,9 +224,9 @@
         type: 'category',
         boundaryGap: false,
         data: props.xAxisData,
-        axisTick: getAxisTickStyle(),
-        axisLine: getAxisLineStyle(props.showAxisLine),
-        axisLabel: getAxisLabelStyle(props.showAxisLabel)
+        axisTick: getAxisTickStyle(true),
+        axisLine: getAxisLineStyle(props.showAxisLine, true),
+        axisLabel: getAxisLabelStyle(props.showAxisLabel, true)
       },
       yAxis: {
         type: 'value',
@@ -239,7 +239,7 @@
               ? (value: number) => formatChartValue(value, props.valuePrefix, props.valuePrecision)
               : undefined
         },
-        axisLine: getAxisLineStyle(props.showAxisLine),
+        axisLine: getAxisLineStyle(false),
         splitLine: getSplitLineStyle(props.showSplitLine)
       }
     }

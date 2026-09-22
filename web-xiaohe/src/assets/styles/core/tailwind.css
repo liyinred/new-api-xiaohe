@@ -27,6 +27,9 @@
   --art-gray-800: #383853;
   --art-gray-900: #323251;
 
+  /* 图表坐标轴间距 */
+  --art-chart-axis-label-margin: 12px;
+
   /* Border Colors */
   --art-card-border: rgba(0, 0, 0, 0.08);
 

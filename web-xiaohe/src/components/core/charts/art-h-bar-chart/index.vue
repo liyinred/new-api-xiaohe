@@ -155,9 +155,9 @@
         tooltip: props.showTooltip ? getTooltipStyle(props.stack ? 'item' : 'axis') : undefined,
         xAxis: {
           type: 'value',
-          axisTick: getAxisTickStyle(),
-          axisLine: getAxisLineStyle(props.showAxisLine),
-          axisLabel: getAxisLabelStyle(props.showAxisLabel),
+          axisTick: getAxisTickStyle(true),
+          axisLine: getAxisLineStyle(props.showAxisLine, true),
+          axisLabel: getAxisLabelStyle(props.showAxisLabel, true),
           splitLine: getSplitLineStyle(props.showSplitLine)
         },
         yAxis: {
@@ -165,7 +165,7 @@
           data: props.xAxisData,
           axisTick: getAxisTickStyle(),
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
-          axisLine: getAxisLineStyle(props.showAxisLine)
+          axisLine: getAxisLineStyle(false)
         }
       }
 

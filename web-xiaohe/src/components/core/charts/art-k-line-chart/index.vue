@@ -92,15 +92,15 @@
         xAxis: {
           type: 'category',
           data: props.data.map((item) => item.time),
-          axisTick: getAxisTickStyle(),
-          axisLine: getAxisLineStyle(true),
-          axisLabel: getAxisLabelStyle(true)
+          axisTick: getAxisTickStyle(true),
+          axisLine: getAxisLineStyle(true, true),
+          axisLabel: getAxisLabelStyle(true, true)
         },
         yAxis: {
           type: 'value',
           scale: true,
           axisLabel: getAxisLabelStyle(true),
-          axisLine: getAxisLineStyle(true),
+          axisLine: getAxisLineStyle(false),
           splitLine: getSplitLineStyle(true)
         },
         series: [

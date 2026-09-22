@@ -212,8 +212,8 @@ export function useChart(options: UseChartOptions = {}) {
     styleCache.lastDarkValue = isDark.value
   }
 
-  // 坐标轴线样式
-  const getAxisLineStyle = (show: boolean = true) => {
+  /** 生成坐标轴线样式。@param show 是否显示轴线 @param isXAxis 是否为 X 轴 @returns 轴线配置 */
+  const getAxisLineStyle = (show: boolean = true, isXAxis: boolean = false) => {
     if (styleCache.lastDarkValue !== isDark.value) {
       clearStyleCache()
     }
@@ -223,7 +223,13 @@ export function useChart(options: UseChartOptions = {}) {
         lineStyle: createLineStyle(isDark.value ? '#444' : '#EDEDED')
       }
     }
-    return styleCache.axisLine
+    return {
+      ...styleCache.axisLine,
+      show,
+      lineStyle: isXAxis
+        ? createLineStyle(getCssVar('--art-gray-500'))
+        : styleCache.axisLine.lineStyle
+    }
   }
 
   // 分割线样式
@@ -240,8 +246,8 @@ export function useChart(options: UseChartOptions = {}) {
     return styleCache.splitLine
   }
 
-  // 坐标轴标签样式
-  const getAxisLabelStyle = (show: boolean = true) => {
+  /** 生成坐标轴标签样式。@param show 是否显示标签 @param isXAxis 是否为 X 轴 @returns 标签配置 */
+  const getAxisLabelStyle = (show: boolean = true, isXAxis: boolean = false) => {
     if (styleCache.lastDarkValue !== isDark.value) {
       clearStyleCache()
     }
@@ -253,12 +259,16 @@ export function useChart(options: UseChartOptions = {}) {
         fontSize
       }
     }
-    return styleCache.axisLabel
+    return {
+      ...styleCache.axisLabel,
+      show,
+      ...(isXAxis && { margin: parseFloat(getCssVar('--art-chart-axis-label-margin')) })
+    }
   }
 
-  // 坐标轴刻度样式（静态配置，无需缓存）
-  const getAxisTickStyle = () => ({
-    show: false
+  /** 生成坐标轴刻度样式。@param show 是否显示刻度 @returns 刻度配置 */
+  const getAxisTickStyle = (show: boolean = false) => ({
+    show
   })
 
   // 获取动画配置

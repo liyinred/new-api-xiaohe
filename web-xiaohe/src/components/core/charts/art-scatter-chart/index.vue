@@ -75,15 +75,15 @@
           : undefined,
         xAxis: {
           type: 'value',
-          axisLabel: getAxisLabelStyle(props.showAxisLabel),
-          axisLine: getAxisLineStyle(props.showAxisLine),
-          axisTick: getAxisTickStyle(),
+          axisLabel: getAxisLabelStyle(props.showAxisLabel, true),
+          axisLine: getAxisLineStyle(props.showAxisLine, true),
+          axisTick: getAxisTickStyle(true),
           splitLine: getSplitLineStyle(props.showSplitLine)
         },
         yAxis: {
           type: 'value',
           axisLabel: getAxisLabelStyle(props.showAxisLabel),
-          axisLine: getAxisLineStyle(props.showAxisLine),
+          axisLine: getAxisLineStyle(false),
           axisTick: getAxisTickStyle(),
           splitLine: getSplitLineStyle(props.showSplitLine)
         },

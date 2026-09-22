@@ -7,12 +7,17 @@
       shadow: 'never'
     }"
   >
-    <RouterView></RouterView>
+    <RouterView v-slot="{ Component }">
+      <Transition :name="pageTransition" mode="out-in">
+        <component :is="Component" />
+      </Transition>
+    </RouterView>
   </ElConfigProvider>
 </template>
 
 <script setup lang="ts">
   import { useUserStore } from './store/modules/user'
+  import { useSettingStore } from './store/modules/setting'
   import zh from 'element-plus/es/locale/lang/zh-cn'
   import en from 'element-plus/es/locale/lang/en'
   import { systemUpgrade } from './utils/sys'
@@ -21,7 +26,9 @@
   import { initializeTheme } from './hooks/core/useTheme'
 
   const userStore = useUserStore()
+  const settingStore = useSettingStore()
   const { language } = storeToRefs(userStore)
+  const { pageTransition } = storeToRefs(settingStore)
 
   const locales = {
     zh: zh,
