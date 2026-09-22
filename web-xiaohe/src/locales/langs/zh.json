@@ -289,7 +289,8 @@
     "apiInfo": {
       "title": "API端点信息",
       "endpoint": "接口地址",
-      "group": "当前用户分组",
+      "group": "用户分组",
+      "groupRatio": "分组倍率",
       "defaultGroup": "默认分组",
       "username": "用户名",
       "email": "账户邮箱",
@@ -316,7 +317,7 @@
       "totalCountHint": "筛选范围内的调用总量",
       "totalQuota": "消耗额度",
       "totalQuotaHint": "筛选范围内的额度消耗",
-      "totalTokens": "总 Token",
+      "totalTokens": "消耗 Token",
       "totalTokensHint": "筛选范围内的 Token 用量",
       "averageRpm": "平均 RPM",
       "averageRpmHint": "每分钟平均请求数",
@@ -407,6 +408,8 @@
       "time": "时间",
       "type": "类型",
       "model": "模型 / 分组",
+      "channel": "渠道",
+      "user": "用户",
       "token": "密钥",
       "tokens": "输入 / 输出 Token",
       "quota": "额度消耗",
@@ -427,6 +430,7 @@
     "details": {
       "title": "日志详情",
       "requestId": "请求 ID",
+      "reasoningEffort": "推理强度",
       "billing": {
         "title": "计费详情",
         "mode": "计费模式",

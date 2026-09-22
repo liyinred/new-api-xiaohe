@@ -29,7 +29,7 @@
     data: () => [0, 0, 0, 0, 0, 0, 0],
     stack: false,
     xAxisData: () => [],
-    lineWidth: 2.5,
+    lineWidth: 2,
     showAreaColor: false,
     smooth: true,
     symbol: 'none',
@@ -115,7 +115,12 @@
     return primaryColor.value
   }
 
-  // 生成区域样式
+  /**
+   * 生成多数据折线的区域渐变样式
+   * @param item 折线数据项及其区域配置
+   * @param color 折线与区域的基础颜色
+   * @returns ECharts 区域样式，不显示区域时返回 undefined
+   */
   const generateAreaStyle = (item: LineDataItem, color: string) => {
     // 如果有 areaStyle 配置，或者显式开启了区域颜色，则显示区域样式
     if (!item.areaStyle && !item.showAreaColor && !props.showAreaColor) return undefined
@@ -127,17 +132,20 @@
       color: new graphic.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: hexToRgba(color, areaConfig.startOpacity || 0.2).rgba
+          color: hexToRgba(color, areaConfig.startOpacity || 0.3).rgba
         },
         {
           offset: 1,
-          color: hexToRgba(color, areaConfig.endOpacity || 0.02).rgba
+          color: hexToRgba(color, areaConfig.endOpacity || 0.06).rgba
         }
       ])
     }
   }
 
-  // 生成单数据区域样式
+  /**
+   * 生成单数据折线的区域渐变样式
+   * @returns ECharts 区域样式，不显示区域时返回 undefined
+   */
   const generateSingleAreaStyle = () => {
     if (!props.showAreaColor) return undefined
 
@@ -146,11 +154,11 @@
       color: new graphic.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: hexToRgba(color, 0.2).rgba
+          color: hexToRgba(color, 0.3).rgba
         },
         {
           offset: 1,
-          color: hexToRgba(color, 0.02).rgba
+          color: hexToRgba(color, 0.06).rgba
         }
       ])
     }
@@ -187,9 +195,9 @@
       },
       areaStyle: config.areaStyle,
       emphasis: {
-        focus: 'series' as const,
+        focus: 'none' as const,
         lineStyle: {
-          width: (config.lineWidth ?? props.lineWidth) + 1
+          width: config.lineWidth ?? props.lineWidth
         }
       }
     }

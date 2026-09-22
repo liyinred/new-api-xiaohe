@@ -298,7 +298,8 @@
     "apiInfo": {
       "title": "API endpoint information",
       "endpoint": "Endpoint",
-      "group": "Current user group",
+      "group": "User group",
+      "groupRatio": "Group ratio",
       "defaultGroup": "Default group",
       "username": "Username",
       "email": "Account email",
@@ -325,7 +326,7 @@
       "totalCountHint": "Calls in the selected range",
       "totalQuota": "Quota consumed",
       "totalQuotaHint": "Quota consumed in the selected range",
-      "totalTokens": "Total tokens",
+      "totalTokens": "Tokens consumed",
       "totalTokensHint": "Tokens used in the selected range",
       "averageRpm": "Average RPM",
       "averageRpmHint": "Average requests per minute",
@@ -416,6 +417,8 @@
       "time": "Time",
       "type": "Type",
       "model": "Model / group",
+      "channel": "Channel",
+      "user": "User",
       "token": "Key",
       "tokens": "Input / output tokens",
       "quota": "Quota used",
@@ -436,6 +439,7 @@
     "details": {
       "title": "Log details",
       "requestId": "Request ID",
+      "reasoningEffort": "Reasoning effort",
       "billing": {
         "title": "Billing details",
         "mode": "Billing mode",

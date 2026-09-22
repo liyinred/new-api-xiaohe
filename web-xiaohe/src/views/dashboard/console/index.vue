@@ -83,24 +83,32 @@
               ><ElButton text circle @click="copyEndpoint"
                 ><ArtSvgIcon icon="ri:file-copy-line" /></ElButton></div
           ></div>
-          <div
-            ><p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.group') }}</p
-            ><p class="mt-2 text-sm font-medium text-g-800">{{
-              overview.group || $t('dashboard.apiInfo.defaultGroup')
-            }}</p></div
-          >
-          <div
-            ><p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.username') }}</p
-            ><p class="mt-2 break-all text-sm font-medium text-g-800">{{
-              userStore.info.userName || '-'
-            }}</p></div
-          >
-          <div
-            ><p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.email') }}</p
-            ><p class="mt-2 break-all text-sm font-medium text-g-800">{{
-              userStore.info.email || $t('profile.unboundEmail')
-            }}</p></div
-          >
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.group') }}</p>
+              <p class="mt-2 text-sm font-medium text-g-800">
+                {{ overview.group || $t('dashboard.apiInfo.defaultGroup') }}
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.groupRatio') }}</p>
+              <p class="mt-2 text-sm font-medium text-g-800">{{ groupRatioLabel }}</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.username') }}</p>
+              <p class="mt-2 break-all text-sm font-medium text-g-800">
+                {{ userStore.info.userName || '-' }}
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-g-500">{{ $t('dashboard.apiInfo.email') }}</p>
+              <p class="mt-2 break-all text-sm font-medium text-g-800">
+                {{ userStore.info.email || $t('profile.unboundEmail') }}
+              </p>
+            </div>
+          </div>
           <ElAlert
             :title="$t('dashboard.apiInfo.safety')"
             type="info"
@@ -115,7 +123,12 @@
 
 <script setup lang="ts">
   import { fetchUserQuotaData, type QuotaDataItem } from '@/api/dashboard'
-  import { fetchGetUserInfo, fetchSystemStatus, type SystemStatus } from '@/api/auth'
+  import {
+    fetchGetUserInfo,
+    fetchSystemStatus,
+    fetchUserGroups,
+    type SystemStatus
+  } from '@/api/auth'
   import { useUserStore } from '@/store/modules/user'
   import {
     formatQuota as formatDisplayQuota,
@@ -152,12 +165,23 @@
   const usageData = ref<QuotaDataItem[]>([])
   const systemStatus = ref<SystemStatus>()
   const apiEndpoint = ref(resolveApiEndpoint())
+  const groupRatio = ref<number | string>()
   const overview = computed(() => ({
     quota: Number(userStore.info.quota || 0),
     usedQuota: Number(userStore.info.usedQuota || 0),
     requestCount: Number(userStore.info.requestCount || 0),
     group: userStore.info.group || ''
   }))
+  /**
+   * 格式化当前用户分组倍率
+   * @returns 带 x 后缀的倍率文本，缺失时返回占位符
+   */
+  const groupRatioLabel = computed(() => {
+    const ratio = groupRatio.value
+    if (typeof ratio === 'number' && Number.isFinite(ratio)) return `${ratio}x`
+    if (typeof ratio === 'string' && ratio.trim()) return ratio
+    return '-'
+  })
   /**
    * 将最近用量数据转换为管理员设置的展示数值
    * @returns 展示数值数组
@@ -186,18 +210,20 @@
     try {
       const endTimestamp = Math.floor(Date.now() / 1000)
       const startTimestamp = endTimestamp - 24 * 60 * 60
-      const [userInfo, quotaData, status] = await Promise.all([
+      const [userInfo, quotaData, status, userGroups] = await Promise.all([
         fetchGetUserInfo(),
         fetchUserQuotaData({
           start_timestamp: startTimestamp,
           end_timestamp: endTimestamp,
           default_time: 'hour'
         }),
-        fetchSystemStatus()
+        fetchSystemStatus(),
+        fetchUserGroups()
       ])
       userStore.setUserInfo(userInfo)
       usageData.value = quotaData
       systemStatus.value = status
+      groupRatio.value = userGroups[userInfo.group || 'default']?.ratio
       apiEndpoint.value = resolveApiEndpoint(status)
     } finally {
       loading.value = false

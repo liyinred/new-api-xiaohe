@@ -14,6 +14,11 @@ export interface SystemStatus {
   price?: number
 }
 
+export interface UserGroupInfo {
+  ratio: number | string
+  desc: string
+}
+
 /**
  * 登录
  * @param params 登录参数
@@ -105,4 +110,12 @@ export function fetchGetUserInfo() {
   return request
     .get<Api.Auth.OfficialUserInfo>({ url: '/api/user/self' })
     .then((user) => mapUserInfo(user))
+}
+
+/**
+ * 获取当前用户可用分组及其实际倍率
+ * @returns 以分组名称为键的倍率与描述配置
+ */
+export function fetchUserGroups() {
+  return request.get<Record<string, UserGroupInfo>>({ url: '/api/user/self/groups' })
 }

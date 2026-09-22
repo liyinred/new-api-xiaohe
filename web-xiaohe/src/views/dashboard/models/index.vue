@@ -53,6 +53,7 @@
         :loading="loading"
         :value-prefix="getQuotaDisplayPrefix(systemStatus)"
         :value-precision="4"
+        :border-radius="0"
         stack
         show-legend
       />
@@ -101,6 +102,7 @@
         height="20rem"
         :loading="loading"
         show-legend
+        show-area-color
       />
       <ArtRingChart
         v-else-if="analyticsTab === 'distribution'"

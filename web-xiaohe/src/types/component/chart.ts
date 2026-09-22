@@ -123,6 +123,10 @@ export interface BarChartProps extends BaseChartProps, AxisDisplayProps, Interac
   stack?: boolean
   /** 圆角 */
   borderRadius?: number | number[]
+  /** 柱形边框颜色 */
+  borderColor?: string
+  /** 柱形边框宽度 */
+  borderWidth?: number
   /** 提示值的数值前缀 */
   valuePrefix?: string
   /** 坐标轴与提示值的最大小数位 */

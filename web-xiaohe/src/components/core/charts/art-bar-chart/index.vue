@@ -82,11 +82,17 @@
     ])
   }
 
-  // 获取基础样式配置
+  /**
+   * 生成柱形的基础样式配置
+   * @param color 柱形颜色或渐变配置
+   * @returns ECharts 柱形样式
+   */
   const getBaseItemStyle = (
     color: string | InstanceType<typeof graphic.LinearGradient> | undefined
   ) => ({
     borderRadius: props.borderRadius,
+    borderColor: props.borderColor,
+    borderWidth: props.borderWidth,
     color: typeof color === 'string' ? createGradientColor(color) : color
   })
 
@@ -183,7 +189,11 @@
 
       // 添加图例配置
       if (props.showLegend && isMultipleData.value) {
-        options.legend = getLegendStyle(props.legendPosition)
+        options.legend = getLegendStyle(props.legendPosition, {
+          itemStyle: {
+            borderWidth: 0
+          }
+        })
       }
 
       // 生成系列数据

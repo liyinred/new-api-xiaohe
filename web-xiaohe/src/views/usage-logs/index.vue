@@ -1,4 +1,4 @@
-<!-- 普通用户使用日志页面 -->
+<!-- 使用日志页面 -->
 <template>
   <div class="art-full-height">
     <div class="grid grid-cols-1 gap-3 mb-3 sm:grid-cols-3">
@@ -66,6 +66,17 @@
             <p v-if="row.group" class="mt-1 text-xs text-g-500 truncate">{{ row.group }}</p>
           </div>
         </template>
+        <template #channel="{ row }">
+          <div class="min-w-0 font-mono text-xs">
+            <p class="text-g-800">{{ row.channel ? `#${row.channel}` : '-' }}</p>
+            <p v-if="row.channel_name" class="mt-1 truncate text-g-500">
+              {{ row.channel_name }}
+            </p>
+          </div>
+        </template>
+        <template #username="{ row }">
+          <span class="text-g-800">{{ row.username || '-' }}</span>
+        </template>
         <template #token_name="{ row }">
           <span class="font-mono text-xs text-g-700">{{ row.token_name || '-' }}</span>
         </template>
@@ -107,6 +118,13 @@
           <p class="mt-1 break-all font-mono text-sm text-g-800">
             {{ selectedLog.request_id || '-' }}
           </p>
+        </div>
+        <div
+          v-if="reasoningEffort"
+          class="flex items-center justify-between gap-4 rounded-lg bg-g-100 p-3"
+        >
+          <span class="text-xs text-g-500">{{ $t('usageLogs.details.reasoningEffort') }}</span>
+          <span class="font-mono text-sm text-g-800">{{ reasoningEffort }}</span>
         </div>
         <div v-if="billingDetails.length">
           <p class="mb-2 text-sm font-medium text-g-800">
@@ -157,6 +175,7 @@
   } from '@/api/usage-log'
   import { fetchSystemStatus, type SystemStatus } from '@/api/auth'
   import { useTableColumns } from '@/hooks/core/useTableColumns'
+  import { useUserStore } from '@/store/modules/user'
   import { formatBillingAmount, formatLogQuota } from '@/utils/quota'
   import { formatTokenMetric } from '@/utils/number'
   import { getDisplayPricingTiers } from '@/views/model-square/model-square'
@@ -187,6 +206,7 @@
     group_ratio?: number
     user_group_ratio?: number
     usage_facts?: Record<string, string | number>
+    reasoning_effort?: string
     op?: {
       action?: string
       params?: Record<string, unknown>
@@ -199,6 +219,7 @@
   }
 
   const { t, locale } = useI18n()
+  const userStore = useUserStore()
   const loading = ref(false)
   const logs = ref<UsageLog[]>([])
   const stats = reactive<UsageLogStats>({ quota: 0, rpm: 0, tpm: 0 })
@@ -207,6 +228,9 @@
   const selectedLog = ref<UsageLog>()
   const systemStatus = ref<SystemStatus>()
   const pagination = reactive({ current: 1, size: 20, total: 0 })
+  const isAdministrator = computed(() =>
+    (userStore.info.roles || []).some((role) => role === 'R_SUPER' || role === 'R_ADMIN')
+  )
 
   /**
    * 创建本地时区的当天起止时间范围
@@ -248,6 +272,15 @@
     const log = selectedLog.value
     if (!log || log.type !== 1) return []
     return buildQuotaAdjustmentDetails(log)
+  })
+
+  /**
+   * 获取当前日志记录的推理强度
+   * @returns 推理强度字段值，未记录时返回空字符串
+   */
+  const reasoningEffort = computed(() => {
+    const value = selectedLog.value ? parseMetadata(selectedLog.value.other)?.reasoning_effort : ''
+    return typeof value === 'string' ? value.trim() : ''
   })
 
   /**
@@ -320,6 +353,22 @@
     { prop: 'created_at', label: t('usageLogs.columns.time'), minWidth: 165, useSlot: true },
     { prop: 'type', label: t('usageLogs.columns.type'), width: 100, useSlot: true },
     { prop: 'model_name', label: t('usageLogs.columns.model'), minWidth: 160, useSlot: true },
+    ...(isAdministrator.value
+      ? [
+          {
+            prop: 'channel' as const,
+            label: t('usageLogs.columns.channel'),
+            minWidth: 120,
+            useSlot: true
+          },
+          {
+            prop: 'username' as const,
+            label: t('usageLogs.columns.user'),
+            minWidth: 120,
+            useSlot: true
+          }
+        ]
+      : []),
     { prop: 'token_name', label: t('usageLogs.columns.token'), minWidth: 130, useSlot: true },
     { prop: 'tokens', label: t('usageLogs.columns.tokens'), minWidth: 130, useSlot: true },
     { prop: 'quota', label: t('usageLogs.columns.quota'), minWidth: 110, useSlot: true },
@@ -359,8 +408,8 @@
     loading.value = true
     try {
       const [listResult, statsResult] = await Promise.all([
-        fetchUsageLogs(buildQuery(true)),
-        fetchUsageLogStats(buildQuery(false))
+        fetchUsageLogs(buildQuery(true), isAdministrator.value),
+        fetchUsageLogStats(buildQuery(false), isAdministrator.value)
       ])
       logs.value = listResult.items || []
       pagination.total = listResult.total || 0

@@ -55,7 +55,10 @@ import { useSettingStore } from '@/store/modules/setting'
 import { getCssVar } from '@/utils/ui'
 import type { BaseChartProps, ChartThemeConfig, UseChartOptions } from '@/types/component/chart'
 
-// 图表主题配置
+/**
+ * 获取 ECharts 图表主题配置
+ * @returns 图表尺寸、字体与共享颜色组配置
+ */
 export const useChartOps = (): ChartThemeConfig => ({
   /** */
   chartHeight: '16rem',
@@ -69,11 +72,34 @@ export const useChartOps = (): ChartThemeConfig => ({
   colors: [
     getCssVar('--el-color-primary-light-1'),
     '#4ABEFF',
-    '#EDF2FF',
     '#14DEBA',
     '#FFAF20',
     '#FA8A6C',
-    '#FFAF20'
+    '#8B9DFF',
+    '#B58CFF',
+    '#E58BD8',
+    '#FF8FB1',
+    '#FFB38A',
+    '#FFD166',
+    '#A8D672',
+    '#72CFA5',
+    '#5ED1D7',
+    '#70B7E6',
+    '#7C93E8',
+    '#A78BCA',
+    '#D49A89',
+    '#C5A35A',
+    '#7FB3A4',
+    '#E07A8D',
+    '#9DBF70',
+    '#55B8A6',
+    '#5F9ED1',
+    '#8C7CC4',
+    '#C98CC8',
+    '#E59F65',
+    '#D6BE61',
+    '#83B6CC',
+    '#A89078'
   ]
 })
 
